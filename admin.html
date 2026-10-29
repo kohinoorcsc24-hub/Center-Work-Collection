@@ -10,7 +10,403 @@
 a{color:var(--p);text-decoration:none}
 h1{font-size:19px;margin:0}.sub{color:var(--m);font-size:13px}
 .top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.btn{padding:9px 13px;border-radi<!DOCTYPE html>
+<html lang="hi"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Admin</title>
+<style>
+:root{--bg:#f4f6fb;--c:#fff;--t:#1b2333;--m:#667085;--p:#1e5eff;--b:#e1e6f0;--ok:#0a8a4a;--warn:#b7791f;--info:#0b6fb8;--bad:#d42a2a}
+@media(prefers-color-scheme:dark){:root{--bg:#121722;--c:#1b2231;--t:#e8ecf5;--m:#9aa6bd;--b:#2e3a52;--ok:#37c783;--warn:#e6b450;--info:#5bb0f0;--bad:#ff6b6b}}
+*{box-sizing:border-box}body{margin:0;font:15px system-ui,sans-serif;background:var(--bg);color:var(--t)}
+.w{max-width:820px;margin:auto;padding:12px 12px 60px}
+a{color:var(--p);text-decoration:none}
+h1{font-size:19px;margin:0}.sub{color:var(--m);font-size:13px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
 .btn{padding:9px 13px;border-radius:9px;border:1px solid var(--p);background:none;color:var(--p);font-weight:600;cursor:pointer;font-size:14px;display:inline-block;text-align:center}
+.btn.f{background:var(--p);color:#fff}.btn.ok{background:var(--ok);border-color:var(--ok);color:#fff}.btn.bad{border-color:var(--bad);color:var(--bad)}.btn.s{padding:6px 10px;font-size:13px}.btn.big{padding:11px 16px;font-size:15px}
+.btn:disabled{opacity:.5}
+input,select,textarea{padding:10px;border:1px solid var(--b);border-radius:9px;background:var(--c);color:var(--t);font:inherit;width:100%}
+label{display:block;font-size:13px;font-weight:600;margin:10px 0 4px}
+.tabs{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin:10px 0}
+.tabs button{padding:12px 4px;border-radius:12px;border:1.5px solid var(--b);background:var(--c);color:var(--t);font-weight:700;font-size:14px;cursor:pointer;line-height:1.25}
+.tabs button.on{background:var(--p);color:#fff;border-color:var(--p)}
+.bdg{display:inline-block;min-width:22px;padding:0 7px;margin-left:5px;border-radius:99px;background:var(--bad);color:#fff;font-size:13px;line-height:22px}
+.on .bdg{background:#fff;color:var(--p)}
+.pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.pill{padding:7px 13px;border-radius:99px;border:1px solid var(--b);background:var(--c);color:var(--t);cursor:pointer;font-weight:600;font-size:13px}
+.pill.on{background:var(--p);color:#fff;border-color:var(--p)}
+.card{background:var(--c);border:1px solid var(--b);border-radius:12px;padding:12px;margin-bottom:10px}
+.row{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:flex-start}
+.no{flex:0 0 auto;width:28px;height:28px;border-radius:50%;background:var(--p);color:#fff;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;margin-right:10px}
+.nm{font-weight:700;font-size:16px}.mt{color:var(--m);font-size:13px;margin-top:2px}
+.tag{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12px;font-weight:700;border:1px solid var(--b);margin:0 4px 4px 0}
+.s-ok{color:var(--ok);border-color:var(--ok)}.s-warn{color:var(--warn);border-color:var(--warn)}.s-info{color:var(--info);border-color:var(--info)}.s-gr{color:var(--m)}.s-bad{color:var(--bad);border-color:var(--bad)}
+.acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.empty{text-align:center;color:var(--m);padding:40px 10px;font-size:16px}
+#lg{max-width:360px;margin:14vh auto;background:var(--c);border:1px solid var(--b);border-radius:14px;padding:18px}
+#md{position:fixed;inset:0;background:#000b;display:none;overflow:auto;z-index:20;padding:12px}
+.mbox{background:var(--c);max-width:520px;margin:4vh auto;padding:16px;border-radius:14px;border:1px solid var(--b)}
+.kv{display:flex;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid var(--b);font-size:14px}
+.kv span:first-child{color:var(--m);flex:0 0 34%}.kv span:nth-child(2){flex:1;word-break:break-word}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#222;color:#fff;padding:10px 16px;border-radius:99px;font-size:14px;display:none;z-index:50;max-width:90%}
+.tag:empty{display:none}
+.split{display:grid;grid-template-columns:1.15fr 1fr;gap:14px;align-items:start;margin-top:10px}
+.pane{position:sticky;top:0;max-height:92vh;overflow:auto;background:var(--c);z-index:2}
+.vw{border:1px solid var(--b);border-radius:10px;padding:6px;min-height:160px;background:var(--bg);text-align:center;overflow:auto;max-height:66vh}
+.vw img{display:block;margin:0 auto;border-radius:4px;max-width:none;background:#fff}
+.pgw{margin:0 auto 12px;text-align:left}.pgw.sel img{outline:3px solid var(--p)}
+.zb{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:6px 0}
+.zb .btn{padding:5px 11px}
+.sbar{position:sticky;bottom:0;background:var(--c);padding:10px 0 2px;border-top:1px solid var(--b);margin-top:12px}
+@media(max-width:820px){.split{grid-template-columns:1fr}.pane{max-height:56vh;padding-bottom:6px;border-bottom:2px solid var(--b)}.vw{max-height:30vh}}
+.chip{display:inline-block;margin:0 6px 6px 0;padding:6px 11px;border-radius:99px;border:1px solid var(--b);background:var(--c);color:var(--t);font-size:13px;cursor:pointer}
+.qb{margin-top:8px;padding:8px 10px;border-radius:9px;border:1px solid var(--warn);color:var(--t);font-size:14px;background:rgba(183,121,31,.08)}
+.ld{height:3px;background:var(--p);position:fixed;top:0;left:0;width:0;z-index:60;transition:width .4s}
+</style></head><body>
+<div class="ld" id="ld"></div>
+<div id="lg">
+ <div style="font-size:19px;font-weight:700">🛡️ Admin Login</div><div id="lm" style="min-height:20px;font-weight:600;margin-top:6px"></div>
+ <label>Admin PIN</label><input id="lpin" type="password" autocomplete="current-password" placeholder="Admin PIN">
+ <button class="btn f big" id="lb" style="width:100%;margin-top:14px">Login</button>
+ <div class="sub" style="margin-top:12px">PIN set nahi kiya? Google Sheet me <b>Admin → Admin PIN set karo</b> chalao.</div>
+</div>
+<div class="w" id="app" style="display:none">
+ <div class="top"><div><h1>🛡️ Admin <span class="sub" id="ver"></span></h1><div class="sub" id="upd"></div></div>
+  <div><button class="btn s f" id="ne">➕ Nayi Entry</button> <button class="btn s" id="rf">⟳</button> <button class="btn s" id="lo">Logout</button></div></div>
+ <div style="display:flex;gap:6px"><input id="q" placeholder="🔎 Kisi bhi entry ko dhundo (naam / mobile / ack)" style="flex:1"><button class="btn f" id="qb">Dhundo</button></div>
+ <div class="tabs" id="tabs"></div>
+ <div id="main"></div>
+</div>
+<div id="md"><div class="mbox" id="mb"></div></div>
+<div id="toast"></div>
+<script>
+const SHEET_URL='https://script.google.com/macros/s/AKfycbzhjpoBnoFRetrxUOGUxcFOXKFekJuBE4zlGmKTMyI-wfhYsvoop2er23IE2JBcQqDv/exec';
+const $=s=>document.querySelector(s),LBL={PAN:'PAN Card',Voter:'Election',Gazette:'Gazette'},DONE=/sent|complete|done|deliver/i,PAGE=30;
+const FN={name:'Naam',newname:'Naya naam',oldname:'Purana naam',father:'Father',mother:'Mother',spouse:'Husband/Wife',dob:'DOB',mobile:'Mobile',aadhaar:'Aadhaar',address:'Address',flat:'Flat/Door/Building',road:'Road/Street',po:'Post Office',area:'Area/Town',district:'District',state:'State',pincode:'Pincode',gender:'Gender',email:'Email',PAN_No:'Purana PAN',EPIC_No:'Purana EPIC',Center:'Center',Operator:'Operator',Type:'Type'};
+let TOKEN=localStorage.atok||'',ITEMS=[],CEN=[],TAB=(new URLSearchParams(location.search).get('tab')=='rev'?'rev':'ver'),BUSY=false,LAST=0,LIM=PAGE,LOADED=false,ERR='',SRVOLD=false;const VER='v10',REQV='v10';
+const F={center:'',pay:''};
+function mk(t,c,x){const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
+function bt(l,c,fn){const b=mk('button','btn '+(c||''),l);b.type='button';b.onclick=fn;return b}
+async function api(b,ms){const ac=new AbortController(),t=setTimeout(()=>ac.abort(),ms||30000);try{const r=await fetch(SHEET_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(b),signal:ac.signal});const tx=await r.text();try{return JSON.parse(tx)}catch(e){throw new Error('Server ne galat jawab diya ('+r.status+'): '+tx.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim().slice(0,110))}}catch(e){if(e.name=='AbortError')throw new Error('Server ne bahut der laga di (net slow ya ZIP badi hai), dobara try karo');throw e}finally{clearTimeout(t)}}
+async function call(a,x,ms){const r=await api({a,t:TOKEN,...x},ms);if(r.err=='auth'){logout();throw new Error('auth')}return r}
+function toast(t){const e=$('#toast');e.textContent=t;e.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>e.style.display='none',2600)}
+function bar(on){const l=$('#ld');l.style.width=on?'70%':'100%';if(!on)setTimeout(()=>l.style.width='0',400)}
+function ago(ts){if(!ts)return'';const m=Math.max(0,Math.round((Date.now()-new Date(ts))/6e4));if(m<2)return'abhi abhi';if(m<60)return m+' min pehle';const h=Math.round(m/60);if(h<24)return h+' ghante pehle';return Math.round(h/24)+' din pehle'}
+const old=ts=>ts&&Date.now()-new Date(ts)>864e5;
+function copy(t,b){const ok=()=>{if(b){const o=b.textContent;b.textContent='✔';setTimeout(()=>b.textContent=o,900)}else toast('Copy ho gaya')};if(navigator.clipboard)navigator.clipboard.writeText(t).then(ok,ok);else{const a=document.createElement('textarea');a.value=t;document.body.append(a);a.select();try{document.execCommand('copy')}catch(e){}a.remove();ok()}}
+const gid=u=>{const m=/\/d\/([^\/?]+)/.exec(u||'')||/[?&]id=([^&]+)/.exec(u||'');return m?m[1]:''};
+const zipUrl=u=>gid(u)?'https://drive.google.com/uc?export=download&id='+gid(u):u;
+const sCls=s=>DONE.test(s)?'s-ok':/ready|applied|process/i.test(s)?'s-info':/pending|review|received/i.test(s)?'s-warn':/reject|fail/i.test(s)?'s-bad':'s-gr';
+const pCls=p=>p=='Done'?'s-ok':p=='Verify'?'s-info':p=='Rejected'?'s-bad':'s-warn';
+const pLbl=p=>p=='Done'?'✅ Payment Done':p=='Verify'?'🔎 Verify baaki':p=='Rejected'?'❌ Payment reject':'💰 Payment baaki';
+const noAck=i=>!i.ack&&i.status=='Received',payOpen=i=>i.pay!='Done',qAct=i=>i.qs=='Open'||i.qs=='Replied',inVer=i=>i.vs=='Pending',inRev=i=>i.vs=='Review',held=i=>inVer(i)||inRev(i);
+function closeM(){$('#md').style.display='none'}
+function openM(n,wide){$('#mb').style.maxWidth=wide?'1150px':'520px';$('#mb').replaceChildren(n);$('#md').style.display='block';$('#md').scrollTop=0}
+$('#md').onclick=e=>{if(e.target.id=='md')closeM()};
+
+/* ---------- data (sirf pending kaam aata hai) ---------- */
+function cacheSave(){try{localStorage.acache=JSON.stringify({items:ITEMS,cen:CEN})}catch(e){}}
+async function load(manual){if(BUSY){if(manual)toast('Load ho raha hai, ruko...');return}BUSY=true;bar(true);$('#upd').textContent='⏳ Load ho raha hai...';
+ try{const r=await call('alist',{},40000);if(!r.ok)throw new Error(r.msg||'error');ITEMS=r.items.sort((a,b)=>String(a.ts).localeCompare(String(b.ts)));CEN=r.centers;LAST=Date.now();LOADED=true;ERR='';SRVOLD=r.ver!==REQV;cacheSave();$('#upd').textContent='Taaza: '+new Date().toLocaleTimeString('en-IN')+' · poori entries: '+r.total;if($('#md').style.display!='block')render()}
+ catch(e){if(e.message!='auth'){ERR=e.name=='AbortError'?'Server ne bahut der laga di (net slow ya pehli baar setup ho raha hai)':(e.message||'Net ki dikkat');$('#upd').textContent='⚠️ '+ERR;if($('#md').style.display!='block')render()}}
+ finally{BUSY=false;bar(false);if(!LOADED&&!ERR&&$('#md').style.display!='block')render()}}
+async function upd(ids,set,msg){try{const r=await call('aupd',{ids,set});if(!r.ok){toast('❌ '+(r.msg||'error'));return false}
+ ITEMS.forEach(i=>{if(!ids.includes(i.id))return;if(set.ack!==undefined){i.ack=set.ack;if(set.ack&&set.status===undefined&&i.status=='Received')i.status='Applied'}if(set.status!==undefined)i.status=set.status||'Received';if(set.pay!==undefined){i.pay=set.pay;if(set.pay=='Done'&&!i.mode&&set.mode===undefined)i.mode='Cash'}if(set.mode!==undefined)i.mode=set.mode;if(set.utr!==undefined)i.utr=set.utr;if(set.amt!==undefined)i.amt=Number(set.amt)});
+ ITEMS=ITEMS.filter(i=>noAck(i)||payOpen(i)||qAct(i)||held(i));cacheSave();toast('✅ '+(msg||'Ho gaya'));render();return true}catch(e){if(e.message!='auth')toast('❌ Net ya server ki dikkat, dobara try karo');return false}}
+
+/* ---------- cards ---------- */
+function head(i,n){const l=mk('div');l.style.display='flex';if(n){l.append(mk('div','no',n))}const t=mk('div');t.append(mk('div','nm',i.name||'(naam nahi)'));
+ const m=mk('div','mt');if(i.mobile){const a=mk('a',null,i.mobile);a.href='tel:'+String(i.mobile).replace(/\D/g,'');m.append(a,' · ')}m.append((i.center||'-')+' · '+(LBL[i.service]||i.service));t.append(m);
+ const w=mk('div','mt',(old(i.ts)?'⚠️ ':'⏱ ')+ago(i.ts));if(old(i.ts))w.style.color='var(--bad)';w.style.fontWeight='600';t.append(w);l.append(t);return l}
+function zipBtn(i){if(!i.zip)return null;const z=mk('a','btn s','⬇ ZIP');z.href=zipUrl(i.zip);z.target='_blank';z.rel='noopener';return z}
+function workCard(i,n){const c=mk('div','card'),r=mk('div','row'),rt=mk('div');r.append(head(i,n),rt);if(/correction/i.test(i.type))rt.append(mk('span','tag s-warn','Correction'));rt.append(mk('span','tag '+pCls(i.pay),pLbl(i.pay)));c.append(r);
+ const a=mk('div','acts');a.append(bt('✏️ Ack daalo','f big',()=>ackM(i)),bt('❓ Query','',()=>raiseM(i)),bt('📋 Data','',()=>details(i)),bt('🔁 Review me bhejo','s',()=>revM(i)));const z=zipBtn(i);if(z)a.append(z);c.append(a);return c}
+const rs=n=>'₹'+Number(n||0).toLocaleString('en-IN');
+function amtTag(i){if(i.own)return null;return i.amt>0?mk('span','tag s-ok',rs(i.amt)):mk('span','tag s-bad','⚠️ Amount set nahi hua')}
+async function amtM(i){const v=prompt('Amount (₹) likho'+(i.name?' - '+i.name:''),i.amt||'');if(v===null)return;const t=v.trim();if(!/^\d{1,6}(\.\d{1,2})?$/.test(t)){toast('❌ Amount sahi likho (sirf ank)');return}await upd([i.id],{amt:t},'Amount '+rs(t)+' set ho gaya')}
+function verCard(i,n){const c=mk('div','card'),r=mk('div','row'),rt=mk('div');r.append(head(i,n),rt);if(/correction/i.test(i.type))rt.append(mk('span','tag s-warn','Correction'));rt.append(mk('span','tag s-info',i.vs=='Review'?'🔁 Review pending':'🔍 Verification pending'));{const t=amtTag(i);if(t)rt.append(t)}c.append(r);
+ const a=mk('div','acts');a.append(bt(i.vs=='Review'?'🔁 Review karo':'🔍 Verify karo','f big',()=>zipEdit(i,i.vs=='Review'?'rev':'ver')),bt('❓ Query','',()=>raiseM(i)));const z=zipBtn(i);if(z)a.append(z);c.append(a);return c}
+async function revM(i){if(!confirm('Is entry ko "Review pending" me bhejein?\n\nTab tak yahi se edit ho sakegi. Review ok karne par wapas aage ka kaam me chali jayegi.'))return;
+ try{const r=await call('aver',{id:i.id,op:'review'});if(!r.ok){toast('❌ '+(r.msg||'error'));return}i.vs='Review';const k=ITEMS.findIndex(x=>x.id==i.id);if(k>=0)ITEMS[k].vs='Review';else ITEMS.push(i);cacheSave();toast('✅ Review pending me bhej di');render()}catch(e){if(e.message!='auth')toast('❌ Net ya server ki dikkat')}}
+function payCard(i,n){const c=mk('div','card'),r=mk('div','row'),rt=mk('div');r.append(head(i,n),rt);{const t=amtTag(i);if(t)rt.append(t)}rt.append(mk('span','tag '+pCls(i.pay),pLbl(i.pay)));if(i.ack)rt.append(mk('span','tag s-ok','Ack aa gaya'));c.append(r);
+ if(i.utr||i.mode)c.append(mk('div','mt','UTR: '+(i.utr||'-')+(i.mode?' · '+i.mode:'')));
+ const a=mk('div','acts');
+ if(i.pay=='Verify'){a.append(bt('✅ Payment mil gaya','ok big',()=>upd([i.id],{pay:'Done'},'Payment Done')),bt('❌ Reject','bad',()=>upd([i.id],{pay:'Rejected'},'Reject kar diya')))}
+ else a.append(bt('💵 Cash mila','ok big',()=>upd([i.id],{pay:'Done',mode:'Cash'},'Cash Payment Done')),bt('✅ Online mila','',()=>upd([i.id],{pay:'Done',mode:'Online'},'Payment Done')));
+ if(i.proof){const z=mk('a','btn s','🖼 Screenshot');z.href=i.proof;z.target='_blank';z.rel='noopener';a.append(z)}if(i.pay!='Done')a.append(bt('✏️ Amount '+(i.amt>0?'badlo':'set karo'),'s',()=>amtM(i)));a.append(bt('📋 Data','s',()=>details(i)));c.append(a);return c}
+function plain(i){const c=mk('div','card'),r=mk('div','row'),rt=mk('div');r.append(head(i),rt);rt.append(mk('span','tag '+sCls(i.status),i.status),mk('span','tag '+pCls(i.pay),pLbl(i.pay)));c.append(r);
+ if(i.ack){const k=mk('div','mt');k.append('Ack: ',mk('b',null,i.ack));k.append(' ');k.append(bt('Copy','s',function(){copy(i.ack,this)}));c.append(k)}
+ const a=mk('div','acts');const qb=qBlock(i);if(qb)c.append(qb);a.append(bt('📋 Data','s',()=>details(i)),bt('✏️ Badlo','s',()=>editM(i)),bt('❓ Query','s',()=>raiseM(i)),bt('📤 Upload','s',()=>upM(i)));if(!held(i))a.append(bt('🔁 Review','s',()=>revM(i)));else a.append(bt('🔍 Verify karo','s f',()=>zipEdit(i,i.vs=='Review'?'rev':'ver')));const z=zipBtn(i);if(z)a.append(z);c.append(a);return c}
+
+/* ---------- query / documents ---------- */
+const b64=b=>new Promise(r=>{const fr=new FileReader();fr.onload=()=>r(fr.result.split(',')[1]);fr.readAsDataURL(b)});
+async function prep(f){if(f.type=='application/pdf'){if(f.size>4.5e6)throw new Error(f.name+': PDF 4.5MB se badi hai');return{n:f.name,t:'application/pdf',d:await b64(f)}}
+ if(!f.type.startsWith('image/'))throw new Error(f.name+': sirf photo ya PDF chalegi');
+ const bm=await createImageBitmap(f),k=Math.min(1,1800/Math.max(bm.width,bm.height)),c=document.createElement('canvas');c.width=Math.round(bm.width*k);c.height=Math.round(bm.height*k);c.getContext('2d').drawImage(bm,0,0,c.width,c.height);
+ const bl=await new Promise(r=>c.toBlob(r,'image/jpeg',.82));return{n:f.name.replace(/\.\w+$/,'')+'.jpg',t:'image/jpeg',d:await b64(bl)}}
+function qMerge(i,r){Object.assign(i,{qs:r.qs,qt:r.qt,qf:r.qf,qu:r.qu});const k=ITEMS.findIndex(x=>x.id==i.id);if(k>=0)Object.assign(ITEMS[k],{qs:r.qs,qt:r.qt,qf:r.qf,qu:r.qu});else if(qAct(i))ITEMS.push(i);ITEMS=ITEMS.filter(x=>noAck(x)||payOpen(x)||qAct(x)||held(x));cacheSave();render()}
+async function qdo(i,op,extra,msg){try{const r=await call('aq',{id:i.id,op,...extra},90000);if(!r.ok){toast('❌ '+(r.msg||'error'));return false}qMerge(i,r);toast('✅ '+msg);return true}catch(e){if(e.message!='auth')toast('❌ Net ya server ki dikkat, dobara try karo');return false}}
+function fileLinks(i){const w=mk('div');(i.qf||[]).forEach((f,k)=>{const a=mk('a','btn s','📎 '+(f.n||'File '+(k+1)));a.href=f.u;a.target='_blank';a.rel='noopener';a.style.margin='4px 6px 0 0';w.append(a)});return w}
+function raiseM(i){const b=mk('div');b.append(mk('div','nm','❓ Query uthao'),mk('div','mt',(i.name||'')+' · '+(i.center||'')));
+ const t=mk('textarea');t.rows=4;t.placeholder='Center ko kya chahiye? (jaise: PAN pehle se bana hai, PAN card ki copy upload karo)';t.style.marginTop='10px';
+ const pre=['PAN pehle se bana hua hai - PAN card ki copy upload karo','Aadhaar purana hai - Updated (naya) Aadhaar upload karo','Photo / Signature saaf nahi hai - dobara saaf upload karo','DOB proof chahiye - Birth certificate ya 10th marksheet upload karo','Address proof chahiye - upload karo','Documents clear nahi hain - dobara scan karke upload karo'];
+ const ch=mk('div');ch.style.marginTop='10px';pre.forEach(x=>{const c=mk('span','chip',x.split(' - ')[0]);c.onclick=()=>{t.value=x};ch.append(c)});
+ b.append(mk('label',null,'Jaldi chuno (ya khud likho)'),ch,t);
+ const a=mk('div','acts');a.append(bt('📨 Query bhejo','f big',async function(){if(t.value.trim().length<3){toast('Query likho');return}this.disabled=true;if(await qdo(i,'raise',{text:t.value.trim()},'Query bhej di, center ko email gaya'))closeM();else this.disabled=false}),bt('Band','',closeM));b.append(a);openM(b)}
+function upM(i){const b=mk('div');b.append(mk('div','nm','📤 Documents upload'),mk('div','mt',(i.name||'')+' · '+(i.center||'')+' · WhatsApp ya offline se mile documents yaha daalo'));
+ const f=mk('input');f.type='file';f.multiple=true;f.accept='image/*,application/pdf';f.style.marginTop='10px';const info=mk('div','mt','Photo ya PDF, ek baar me 8 tak');info.style.margin='8px 0';
+ const a=mk('div','acts');a.append(bt('⬆ Upload karo','f big',async function(){const L=[...f.files].slice(0,8);if(!L.length){toast('Pehle file chuno');return}this.disabled=true;info.textContent='⏳ Taiyar ho raha hai...';
+  try{const arr=[];for(const x of L)arr.push(await prep(x));info.textContent='⏳ Upload ho raha hai, ruko...';if(await qdo(i,'upload',{files:arr},arr.length+' file upload ho gayi'))closeM();else{this.disabled=false;info.textContent='❌ Dobara try karo'}}catch(e){this.disabled=false;info.textContent='❌ '+e.message}}),bt('Band','',closeM));
+ b.append(f,info,a);openM(b)}
+function qBlock(i){if(!i.qs)return null;const d=mk('div','qb');d.append(mk('div',null,'❓ '+(i.qt||'')),mk('div','mt',i.qs=='Open'?'⏳ Center ke documents ka wait hai':i.qs=='Replied'?'📥 Documents aa gaye - check karo':'✔ Query solve ho chuki'));if((i.qf||[]).length)d.append(fileLinks(i));return d}
+function qryCard(i,n){const c=mk('div','card'),r=mk('div','row'),rt=mk('div');r.append(head(i,n),rt);rt.append(mk('span','tag '+(i.qs=='Replied'?'s-info':'s-warn'),i.qs=='Replied'?'📥 Documents aa gaye':'⏳ Wait'));c.append(r,qBlock(i));
+ const a=mk('div','acts');if(i.qs=='Replied')a.append(bt('✔ Solve ho gayi','ok big',()=>qdo(i,'resolve',{},'Query solve')));a.append(bt('📤 Documents upload',i.qs=='Replied'?'':'f big',()=>upM(i)));if(i.qs=='Open')a.append(bt('✔ Solve','',()=>qdo(i,'resolve',{},'Query solve')));
+ a.append(bt('✏️ Nayi query','s',()=>raiseM(i)),bt('📋 Data','s',()=>details(i)),bt('🔁 Review me bhejo (documents jodne ke liye)','s',()=>revM(i)));const z=zipBtn(i);if(z)a.append(z);c.append(a);return c}
+
+/* ---------- ZIP me documents jodo / Correction banao ---------- */
+let svc='PAN',PH={};
+const SEND_TO=['Kohinoor Xerox','1st floor, Market Yard complex, Opp. Mamlatdar Kacheri, Ambaji Highway, Vadali - 383235']; // form ke neeche chhapne wala address
+const VCK=['Name','Relative Name','Date of Birth','Gender','Address','Photo','Mobile Number'];
+const D8=v=>v?v.split('-').reverse().join('/'):'';
+const INS_C=["The form should be filled in all CAPITAL alphabets only.","Latest passport size photo should be with a light background and without glasses."];
+const FORMS={
+PAN:{t:['New PAN Application Form','PAN Correction Application Form'],cn:'PAN Center Name',cor:['Existing PAN Number',d=>d.PAN_No],
+rows:[['Name','',d=>d.name],["Father's Name","(Even in case of married ladies, father's name must be provided)",d=>d.father],["Mother's Name",'',d=>d.mother],['Date of Birth','',d=>D8(d.dob)],['Gender','',d=>d.gender],['Proof of Date of Birth','(Document attached for DOB)',d=>d.dobtype],['Residence Address','(If applicant has resided at more than one place during last one year, mention all details)',d=>[d.flat,d.road,d.po,d.area,d.district,d.state,d.pincode].filter(Boolean).join(', '),1],['Aadhaar Number','',d=>d.aadhaar],["Applicant's Mobile Number",'',d=>d.mobile]],
+ins:["Attach latest Aadhaar Card photocopy (on the backside of this page).","Attach photocopy of the document selected for Proof of Date of Birth (DOB Proof).",...INS_C,"Important: If a PAN Card has already been generated previously, no refund will be provided."]},
+Voter:{ns:1,ck:1,t:['New Voter ID Application Form','Voter ID Correction Application Form'],cn:'Voter ID Center Name',cor:['Existing Voter ID (EPIC) No.',d=>d.EPIC_No],
+rows:[['Name','',d=>d.name],["Father's Name",'',d=>d.father],["Mother's Name",'',d=>d.mother],['Husband/Wife Name','',d=>d.spouse,0,1],['Date of Birth','',d=>D8(d.dob)],['Gender','',d=>d.gender],['Proof of Date of Birth','(Document attached for DOB)',d=>d.dobtype],['Residence Address','',d=>d.address,1],['Aadhaar Number','',d=>d.aadhaar],["Applicant's Mobile Number",'',d=>d.mobile]],
+ins:["Attach latest Aadhaar Card photocopy.","Attach photocopy of DOB Proof and Address Proof.",...INS_C]},
+Gazette:{t:['Gazette Name Change Application Form','Gazette Correction Application Form'],cn:'Gazette Center Name',
+rows:[['Old Name','',d=>d.oldname],['New Name','',d=>d.newname],["Father's Name",'',d=>d.father],["Mother's Name",'',d=>d.mother],['Date of Birth','',d=>D8(d.dob)],['Residence Address','',d=>d.address,1],['Aadhaar Number','',d=>d.aadhaar],["Applicant's Mobile Number",'',d=>d.mobile],['Reason for Change','',d=>d.reason]],
+ins:["Attach latest Aadhaar Card photocopy (front and back).","Attach photocopy of ID proof showing the old name.","Attach affidavit, if available.",...INS_C]}};
+const ldB=async k=>PH[k]||null;
+const fitI=(x,b,X,Y,W,H)=>{if(!b)return;const s=Math.min(W/b.width,H/b.height),w=b.width*s,h=b.height*s;x.drawImage(b,X+(W-w)/2,Y+(H-h)/2,w,h)};
+const wrapT=(x,t,w)=>{const o=[];let l='';for(const wd of String(t||'').split(/\s+/).filter(Boolean)){const n=l?l+' '+wd:wd;if(x.measureText(n).width>w&&l){o.push(l);l=wd}else l=n}if(l)o.push(l);return o};
+async function drawForm(cv,d,kind,cen,em){const[ph,sg]=await Promise.all([ldB('photo'),ldB('sign')]);cv.width=2480;cv.height=3508;const x=cv.getContext('2d'),F=FORMS[svc],cor=kind=='Correction',U=v=>String(v||'').toUpperCase(),B='Arial,Helvetica,sans-serif';
+x.fillStyle='#fff';x.fillRect(0,0,2480,3508);x.scale(2480/794,2480/794);x.fillStyle='#000';x.strokeStyle='#000';x.lineWidth=3;x.strokeRect(22,22,750,1079);
+x.textAlign='left';x.font='bold 16px '+B;x.fillText('Date: '+new Date().toLocaleDateString('en-GB'),632,56);
+x.textAlign='center';x.font='bold 25px '+B;x.fillText('-: '+F.t[cor?1:0]+' :-',335,100);x.textAlign='left';
+if(!(svc=='Voter'&&cor&&!(d.Correction_For||'').split(', ').includes('Photo'))){x.save();x.setLineDash([6,4]);x.lineWidth=2;x.strokeRect(610,125,150,188);x.restore();
+if(ph)fitI(x,ph,614,129,142,180);else{x.font='12px '+B;x.fillStyle='#888';x.textAlign='center';x.fillText('Passport Size Photo',685,215);x.fillText('(3.2 x 4.0 cm)',685,231);x.fillStyle='#000';x.textAlign='left'}}
+let y=150;const R=(cor&&F.cor?[[F.cor[0],'',F.cor[1]]]:[]).concat(F.rows);
+for(const[lb,sb,fn,ad,op] of R){const v=U(fn(d));if((op||lb=='Aadhaar Number')&&!v)continue;x.font='bold 14px '+B;const vl=wrapT(x,v,335);x.font='11px '+B;const sl=sb?wrapT(x,sb,185):[];const h=Math.max(ad?92:40,16+sl.length*13+12,vl.length*18+14);
+x.fillStyle='#000';x.font='bold 15px '+B;x.fillText(lb,52,y+17);x.font='11px '+B;x.fillStyle='#555';sl.forEach((t,i)=>x.fillText(t,52,y+31+i*13));
+x.fillStyle='#000';x.font='bold 14px '+B;vl.forEach((t,i)=>x.fillText(t,252,y+h-8-(vl.length-1-i)*18));
+x.save();x.setLineDash([5,4]);x.lineWidth=1;x.beginPath();x.moveTo(250,y+h-4);x.lineTo(590,y+h-4);x.stroke();x.restore();y+=h}
+y+=14;x.lineWidth=1.5;[[F.cn,cen],['Above Center Email ID',em]].forEach(([l,v],i)=>{const Y=y+i*36;x.fillStyle='#efefef';x.fillRect(45,Y,210,36);x.strokeRect(45,Y,705,36);x.beginPath();x.moveTo(255,Y);x.lineTo(255,Y+36);x.stroke();x.fillStyle='#000';x.font='bold 15px '+B;x.fillText(l,55,Y+23);x.font='14px '+B;x.fillText(v||'',265,Y+23)});
+y+=72+14;if(F.ck&&cor){const on=(d.Correction_For||'').split(', ');x.fillStyle='#000';x.font='bold 14px '+B;x.fillText('Correction Required In (tick):',52,y+12);x.font='13px '+B;VCK.forEach((v,i)=>{const X=52+(i%4)*176,Y=y+36+Math.floor(i/4)*24;x.lineWidth=1.5;x.strokeRect(X,Y-11,13,13);if(on.includes(v)){x.lineWidth=2.5;x.beginPath();x.moveTo(X+2,Y-4);x.lineTo(X+5.5,Y);x.lineTo(X+12,Y-10);x.stroke()}x.fillText(v,X+20,Y)});y+=76}if(!F.ns){x.lineWidth=3;x.strokeRect(478,y,270,88);fitI(x,sg,484,y+4,258,80);x.font='bold 14px '+B;x.textAlign='center';x.fillText('(Sign/Thumb Impression)',613,y+108);x.textAlign='left'}
+y+=F.ns?24:122;x.lineWidth=1.5;x.beginPath();x.moveTo(45,y);x.lineTo(750,y);x.stroke();
+x.font='bold 17px '+B;x.fillText('Instructions',45,y+24);x.fillRect(45,y+27,x.measureText('Instructions').width,1.5);y+=44;
+const vc=svc=='Voter'&&cor,on2=(d.Correction_For||'').split(', ').filter(Boolean),pf=on2.filter(v=>!['Photo','Mobile Number'].includes(v)),ins=vc?[...(pf.length?['Attach proof for the correction in: '+pf.join(', ')+'.']:[]),INS_C[0],...(on2.includes('Photo')?[INS_C[1]]:[]),'Attach photocopy of the existing (old) Voter ID card.']:cor?[...F.ins.slice(0,F.ins.length-(svc=='PAN'?1:0)),'Attach photocopy of the existing (old) card for correction.',...(svc=='PAN'?F.ins.slice(-1):[])]:F.ins,sp=ins.length>5?16:18;x.font='13px '+B;
+for(const t of ins){const L=wrapT(x,'• '+t,690);L.forEach((l,i)=>x.fillText((i?'   ':'')+l,52,y+=sp));y+=2}
+y+=14;x.fillStyle='#f7f7f7';x.fillRect(45,y,705,60);x.strokeStyle='#000';x.lineWidth=1.5;x.strokeRect(45,y,705,60);x.fillStyle='#000';x.font='bold 13px '+B;const hd='-: Document Need to sent on below Address :-';x.fillText(hd,57,y+18);x.fillRect(57,y+21,x.measureText(hd).width,1.2);
+x.font='bold 13px '+B;x.fillText(SEND_TO[0],57,y+38);x.font='13px '+B;x.fillText(SEND_TO[1],57,y+54)}
+
+const blobQ=(c,q)=>new Promise(r=>c.toBlob(r,'image/jpeg',q));
+async function a4(fs){const W=2480,H=3508,M=150,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,W,H);const bh=fs.length==1?H-2*M:(H-3*M)/2;
+for(let i=0;i<fs.length;i++){const b=await createImageBitmap(fs[i]),s=Math.min((W-2*M)/b.width,bh/b.height),w=b.width*s,h=b.height*s;x.drawImage(b,(W-w)/2,M+i*(bh+M)+(bh-h)/2,w,h)}
+const mn=500*1024,mx=0;let q=.92,j=await blobQ(c,q);
+while(mx&&j.size>mx&&q>.2){q-=.05;j=await blobQ(c,q)}
+if(j.size<mn&&q<1){q=1;j=await blobQ(c,1)}
+return{jpg:j,kb:Math.round(j.size/1024)}}
+const PANRE=/^[A-Z]{5}\d{4}[A-Z]$/;
+function dBlob(f){const bin=atob(f.d),u=new Uint8Array(bin.length);for(let k=0;k<bin.length;k++)u[k]=bin.charCodeAt(k);return new Blob([u],{type:f.t})}
+function parseDet(t){const o={},ord=[];t.split(/\r?\n/).forEach(l=>{const k=l.indexOf(': ');if(k>0){const key=l.slice(0,k);o[key]=l.slice(k+2);ord.push(key)}});return{o,ord}}
+const SYSK=['Service','Timestamp','Center','Operator','Type'];
+const PAGEN=n=>{const f=n.split('/').pop();return /Application_Form/i.test(f)?'📝 Application Form':/aadhaar/i.test(f)?'🆔 Aadhaar':/dobproof/i.test(f)?'📅 DOB Proof':/addrproof/i.test(f)?'🏠 Address Proof':/oldcard/i.test(f)?'📇 Purana PAN card':/^photo\./i.test(f)?'🧑 Photo':/^sign\./i.test(f)?'✍️ Signature':/_query_/i.test(f)?'❓ Center ka document':'📎 '+f};
+async function resizeImg(f,max,type){const bm=await createImageBitmap(f),k=Math.min(1,max/Math.max(bm.width,bm.height)),c=document.createElement('canvas');c.width=Math.round(bm.width*k);c.height=Math.round(bm.height*k);c.getContext('2d').drawImage(bm,0,0,c.width,c.height);return await new Promise(r=>c.toBlob(r,type,.9))}
+const OLDSRV='Apps Script me Code.gs purani hai. Nayi Code.gs paste karke Save karo, phir Deploy → Manage deployments → Edit → New version → Deploy karo.';
+async function zipEdit(i,mode){try{await zipEdit0(i,mode||'ver')}catch(e){if(e.message!='auth'){const x=mk('div');x.append(mk('div','nm','🔍 Verification'),mk('div','empty','❌ '+e.message),bt('Band','',closeM));openM(x)}}}
+/* ===== All_Documents.pdf: saare document pages (A4 JPG) ek PDF me ===== */
+async function mkPdf(blobs,meta){const enc=new TextEncoder(),ch=[],offs=[];let pos=0;const put=x=>{const u=typeof x=='string'?enc.encode(x):x;ch.push(u);pos+=u.length};const obj=(n,b)=>{offs[n]=pos;put(n+' 0 obj\n'+b+'\nendobj\n')};
+ const imgs=[];for(const b of blobs){const bm=await createImageBitmap(b);imgs.push({w:bm.width,h:bm.height,d:new Uint8Array(await b.arrayBuffer())})}const n=imgs.length,W=595.28,H=841.89;
+ put('%PDF-1.4\n');obj(1,'<< /Type /Catalog /Pages 2 0 R >>');obj(2,'<< /Type /Pages /Count '+n+' /Kids ['+imgs.map((_,k)=>(4+3*k)+' 0 R').join(' ')+'] >>');obj(3,'<< /Producer (Kohinoor CSC) /Title (All Documents) /Keywords ('+String(meta||'').replace(/[()\\]/g,'')+') >>');
+ imgs.forEach((im,k)=>{const s=Math.min(W/im.w,H/im.h),c='q '+(im.w*s).toFixed(2)+' 0 0 '+(im.h*s).toFixed(2)+' '+((W-im.w*s)/2).toFixed(2)+' '+((H-im.h*s)/2).toFixed(2)+' cm /Im0 Do Q';
+  obj(4+3*k,'<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /XObject << /Im0 '+(6+3*k)+' 0 R >> >> /Contents '+(5+3*k)+' 0 R >>');obj(5+3*k,'<< /Length '+c.length+' >>\nstream\n'+c+'\nendstream');
+  offs[6+3*k]=pos;put((6+3*k)+' 0 obj\n<< /Type /XObject /Subtype /Image /Width '+im.w+' /Height '+im.h+' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length '+im.d.length+' >>\nstream\n');put(im.d);put('\nendstream\nendobj\n')});
+ const xr=pos;put('xref\n0 '+(4+3*n)+'\n0000000000 65535 f \n'+offs.slice(1).map(o=>String(o).padStart(10,'0')+' 00000 n \n').join('')+'trailer\n<< /Size '+(4+3*n)+' /Root 1 0 R /Info 3 0 R >>\nstartxref\n'+xr+'\n%%EOF');return new Blob(ch,{type:'application/pdf'})}
+
+async function pdfParse(blob){const u=new Uint8Array(await blob.arrayBuffer()),s=new TextDecoder('latin1').decode(u),pages=[],re=/\/Filter \/DCTDecode \/Length (\d+) >>\nstream\n/g;let m;while((m=re.exec(s))){const st=m.index+m[0].length;pages.push(new Blob([u.subarray(st,st+(+m[1]))],{type:'image/jpeg'}))}const kw=/\/Keywords \(([^)]*)\)/.exec(s);return{pages,meta:kw?kw[1]:''}}
+const isDoc=n=>/(^|\/)(?!00_)\d\d_[^\/]*_A4\.jpg$/.test(n);
+async function zipEdit0(i,mode){const PS='__ps',b=mk('div');b.append(mk('div','nm','🔍 Verification'),mk('div','mt','⏳ ZIP khol raha hu...'));openM(b,true);
+ let r;try{r=await call('azip',{id:i.id,idx:[]},180000)}catch(e){if(e.message!='auth')b.append(mk('div','empty','❌ '+e.message));return}
+ if(!r.ok){b.append(mk('div','empty','❌ '+(r.msg||'ZIP nahi mili')));b.append(bt('Band','',closeM));return}
+ if(!r.names)throw new Error(OLDSRV);
+ const D=parseDet(r.details),d=D.o,root=r.root,all=r.names.filter(n=>!n.endsWith('/')&&!/details\.txt$/.test(n)),pdfName=all.find(n=>/(^|\/)All_Documents\.pdf$/.test(n)),docNames=all.filter(isDoc).sort(),other=all.filter(n=>!isDoc(n)&&n!==pdfName),hasPS=!!(r.photo||r.sign),
+  REPL={},DEL=new Set(),ADD=[],IN={},URLS={},PGB={},CH={};let cur='__pdf',Z=100,PDFNEW=false,sel=null,loaded=false;
+ const rel=n=>n.slice(root.length),metaFor=list=>list.map(rel).join('|')+(hasPS?'|photo_sign':''),pnBlob=()=>r.photo?(REPL[r.photo.n]||dBlob(r.photo)):null,snBlob=()=>r.sign?(REPL[r.sign.n]||dBlob(r.sign)):null,composePS=async()=>(await a4([pnBlob(),snBlob()].filter(Boolean))).jpg;
+ const isPAN=i.service=='PAN';
+ b.replaceChildren(mk('div','nm',(mode=='rev'?'🔁 Review: ':'🔍 Verification: ')+(i.name||'Entry')),mk('div','mt',(i.center||'')+' · '+(LBL[i.service]||i.service)+' · '+(d.Type||i.type||'')+' — document dekhte hue text check/sahi karo, phir "Verify" dabao'));
+ const W=mk('div','split'),Lp=mk('div','pane'),Rp=mk('div');W.append(Lp,Rp);b.append(W);
+ /* ===== LEFT: PDF + zoom ===== */
+ const chips=mk('div','pills');chips.style.marginBottom='2px';const zb=mk('div','zb'),stage=mk('div','vw'),act=mk('div','acts');act.style.marginTop='8px';Lp.append(chips,zb,stage,act);
+ const zl=mk('span','mt','100%'),pgInfo=mk('span','mt','');
+ const applyZ=()=>{stage.querySelectorAll('img').forEach(im=>im.style.width=Z+'%');zl.textContent=Z+'%'};
+ zb.append(bt('➖','s',()=>{Z=Math.max(30,Z-20);applyZ()}),zl,bt('➕','s',()=>{Z=Math.min(400,Z+20);applyZ()}),bt('Fit','s',()=>{Z=100;applyZ()}),bt('150%','s',()=>{Z=150;applyZ()}),pgInfo);
+ stage.addEventListener('wheel',e=>{if(e.ctrlKey){e.preventDefault();Z=Math.max(30,Math.min(400,Z+(e.deltaY<0?10:-10)));applyZ()}},{passive:false});
+ const urlOf=n=>URLS[n]||(URLS[n]=URL.createObjectURL(REPL[n]||PGB[n]));
+ const single=async nm=>{if(REPL[nm])return URL.createObjectURL(REPL[nm]);if(URLS[nm])return URLS[nm];const known=r.photo&&r.photo.n==nm?r.photo:r.sign&&r.sign.n==nm?r.sign:null;let f=known;if(!f){const x=await call('azipget',{id:i.id,ns:[nm]},120000);if(!x.ok||!x.files.length)throw new Error(x.msg||'Page nahi mila');f=x.files[0]}return URLS[nm]=URL.createObjectURL(dBlob(f))};
+ const label=n=>n==PS?'🧑✍️ Photo + Signature':(DEL.has(n)?'🗑 ':REPL[n]&&!ADD.includes(n)?'🔄 ':'')+PAGEN(n);
+ const mark=()=>{Object.keys(CH).forEach(k=>{const c=CH[k];c.className='pill'+(cur==k?' on':'');if(k!='__pdf'){c.textContent=label(k);c.style.opacity=DEL.has(k)?.5:1}})};
+ const pageList=()=>docNames.concat(ADD).concat(hasPS?[PS]:[]);
+ async function loadPages(){if(loaded)return;let ok=false;if(!docNames.length&&!hasPS){loaded=true;return}
+  if(pdfName){stage.replaceChildren(mk('div','mt','⏳ Documents PDF khul rahi hai...'));try{const x=await call('azipget',{id:i.id,ns:[pdfName]},180000);if(x.ok&&x.files.length){const q=await pdfParse(dBlob(x.files[0]));if(q.meta==metaFor(docNames)&&q.pages.length==docNames.length+(hasPS?1:0)){docNames.forEach((n,k)=>PGB[n]=q.pages[k]);if(hasPS)PGB[PS]=q.pages[docNames.length];ok=true}}}catch(e){if(e.message=='auth')throw e}}
+  if(!ok){for(let k=0;k<docNames.length;k++){stage.replaceChildren(mk('div','mt','⏳ Documents ki PDF taiyar ho rahi hai ('+(k+1)+'/'+docNames.length+')...'));const x=await call('azipget',{id:i.id,ns:[docNames[k]]},120000);if(!x.ok||!x.files.length)throw new Error(x.msg||'Page nahi mila');PGB[docNames[k]]=dBlob(x.files[0])}if(hasPS)PGB[PS]=await composePS();PDFNEW=true}
+  loaded=true}
+ function renderPdf(){stage.replaceChildren();const L=pageList();if(!L.length){stage.append(mk('div','mt','Is ZIP me documents ke pages nahi hain'));pgInfo.textContent='';return}
+  if(!sel||!L.includes(sel))sel=L[0];pgInfo.textContent='📑 '+L.length+' pages · page par dabake chuno';
+  L.forEach((n,k)=>{const w=mk('div','pgw'+(n==sel?' sel':'')),lb=mk('div','mt','Page '+(k+1)+'/'+L.length+' · '+label(n)+(ADD.includes(n)?' (naya)':''));lb.style.fontWeight='600';const im=new Image();im.src=urlOf(n);im.style.opacity=DEL.has(n)?.35:1;im.onclick=()=>{sel=n;renderPdf()};w.append(lb,im);stage.append(w)});applyZ()}
+ async function open(nm){cur=nm;mark();
+  if(nm=='__pdf'){stage.replaceChildren(mk('div','mt','⏳ aa raha hai...'));try{await loadPages();if(cur==nm)renderPdf()}catch(e){stage.replaceChildren(mk('div','mt','❌ '+e.message))}return}
+  stage.replaceChildren(mk('div','mt','⏳ aa raha hai...'));try{const u=await single(nm);if(cur!=nm)return;if(/\.pdf$/i.test(nm)){const a=mk('a','btn','📄 PDF kholo');a.href=u;a.target='_blank';stage.replaceChildren(a)}else{const im=new Image();im.src=u;stage.replaceChildren(im);applyZ();if(DEL.has(nm))stage.append(mk('div','mt','🗑 Ye page save par ZIP se hat jayega'));else if(REPL[nm])stage.append(mk('div','mt','🔄 Ye naya page save par lagega'))}}catch(e){stage.replaceChildren(mk('div','mt','❌ '+e.message))}}
+ const addChip=(nm,t)=>{const c=mk('button','pill',t||PAGEN(nm));c.type='button';c.onclick=()=>open(nm);CH[nm]=c;chips.append(c)};
+ if(docNames.length||pdfName||hasPS)addChip('__pdf','📑 Documents (PDF)');other.forEach(n=>addChip(n));
+ const target=()=>cur=='__pdf'?sel:cur,isPS=n=>n==PS,isPhSn=n=>(r.photo&&n==r.photo.n)||(r.sign&&n==r.sign.n);
+ const fi=mk('input');fi.type='file';fi.accept='image/*';fi.style.display='none';
+ fi.onchange=async()=>{const f=fi.files[0];fi.value='';const nm=target();if(!f||!nm)return;if(isPS(nm)){toast('Photo/Signature ko upar ke Photo ya Signature button se badlo');return}try{if(cur=='__pdf')await loadPages();const f2=nm.split('/').pop();let bl;if(/_A4\.jpg$/.test(f2))bl=(await a4([f])).jpg;else if(/\.png$/i.test(f2))bl=await resizeImg(f,700,'image/png');else bl=await resizeImg(f,900,'image/jpeg');REPL[nm]=bl;delete URLS[nm];DEL.delete(nm);if(isPhSn(nm)&&loaded){PGB[PS]=await composePS();delete URLS[PS]}open(cur)}catch(e){toast('❌ '+e.message)}};
+ const addF=mk('input');addF.type='file';addF.accept='image/*';addF.style.display='none';
+ const nextNum=()=>{const nums=all.concat(ADD,Object.keys(REPL)).map(n=>/(^|\/)(\d\d)_/.exec(n)).filter(Boolean).map(m=>+m[2]);return Math.max(0,...nums)+1};
+ addF.onchange=async()=>{const f=addF.files[0];addF.value='';if(!f)return;try{await loadPages();const nm=root+String(nextNum()).padStart(2,'0')+'_extra_A4.jpg';REPL[nm]=(await a4([f])).jpg;ADD.push(nm);sel=nm;if(!CH.__pdf)addChip('__pdf','📑 Documents (PDF)');open('__pdf')}catch(e){toast('❌ '+e.message)}};
+ act.append(bt('🔄 Is page ko badlo','s',()=>{if(!target()){toast('Pehle page chuno (page par dabao)');return}fi.click()}),
+  bt('🗑 Hatao / wapas lao','s bad',()=>{const nm=target();if(!nm){toast('Pehle page chuno');return}if(isPS(nm)||isPhSn(nm)||/Application_Form/.test(nm)){toast('Ye page hataya nahi ja sakta, sirf badal sakte ho');return}if(DEL.has(nm))DEL.delete(nm);else{DEL.add(nm);delete REPL[nm];delete URLS[nm]}open(cur)}),
+  bt('➕ Naya page','s',()=>addF.click()),
+  bt('⬇ PDF download','s',async function(){try{await loadPages();const L=docNames.concat(ADD).filter(n=>!DEL.has(n)),pg=L.map(n=>REPL[n]||PGB[n]);if(hasPS)pg.push(await composePS());if(!pg.length){toast('Koi page nahi');return}const pb=await mkPdf(pg,metaFor(L)),a=document.createElement('a');a.href=URL.createObjectURL(pb);a.download=(i.name||'documents').replace(/\W+/g,'_')+'_documents.pdf';a.click()}catch(e){toast('❌ '+e.message)}}),fi,addF);
+ if((i.qf||[]).length){const q=bt('📥 Center ke bheje documents jodo ('+i.qf.length+')','s',async function(){this.disabled=true;try{toast('⏳ Center ke documents aa rahe hain...');const x=await call('azip',{id:i.id,idx:i.qf.map((_,k)=>k)},180000);if(!x.ok)throw new Error(x.msg||'documents nahi aaye');await loadPages();let n=nextNum();for(const f of x.files){const bl=dBlob(f);if(f.t=='application/pdf'){REPL[root+String(n++).padStart(2,'0')+'_query_'+String(f.n).replace(/[^\w.\-]+/g,'_')]=bl}else{const nm=root+String(n++).padStart(2,'0')+'_query_A4.jpg';REPL[nm]=(await a4([bl])).jpg;ADD.push(nm);sel=nm}}if(!CH.__pdf)addChip('__pdf','📑 Documents (PDF)');open('__pdf');toast('✅ Documents pages ban gaye (PDF/doosri file ZIP me alag judegi). Save par lagenge')}catch(e){toast('❌ '+e.message)}this.disabled=false});act.append(q)}
+ /* ===== RIGHT: text ===== */
+ const payBox=mk('div','qb');payBox.style.cssText='margin:0 0 6px;border-color:var(--p);background:rgba(30,94,255,.06)';payBox.append(mk('div',null,'💰 Payment'));let amI=null,pyS=null,utI=null;
+ if(i.own)payBox.append(mk('div','mt','Apna center hai - payment hamesha Done rehta hai, amount ki zaroorat nahi.'));
+ else if(i.pay=='Done')payBox.append(mk('div','mt','✅ Payment Done'+(i.amt>0?' · '+rs(i.amt):'')+(i.mode?' · '+i.mode:'')+' (ab amount badal nahi sakta)'));
+ else{const gx=mk('div');gx.style.cssText='display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:2px 10px';
+  const w1=mk('div');w1.append(mk('label',null,'Amount (₹) - Verify se pehle zaroori'));amI=mk('input');amI.type='number';amI.min='0';amI.setAttribute('inputmode','decimal');amI.placeholder='jaise 350';amI.value=i.amt>0?i.amt:'';w1.append(amI);
+  const w2=mk('div');w2.append(mk('label',null,'Payment aaya?'));pyS=mk('select');[['','Abhi nahi aaya'],['Cash','💵 Cash aa gaya'],['Online','✅ Online aa gaya']].forEach(([v,l])=>pyS.append(new Option(l,v)));w2.append(pyS);
+  const w3=mk('div');w3.append(mk('label',null,'UTR (online ho to, optional)'));utI=mk('input');utI.placeholder='UTR number';w3.append(utI);w3.style.display='none';pyS.onchange=()=>{w3.style.display=pyS.value=='Online'?'block':'none'};
+  gx.append(w1,w2,w3);payBox.append(gx,mk('div','mt','Cash/Online chunoge to payment seedha Done ho jayega aur center ke baaki amount se kat jayega.'))}
+ Rp.append(payBox);
+ Rp.append(mk('h2',null,'✏️ Data (galti ho to yahi sahi karo)'));const g=mk('div');g.style.cssText='display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:2px 10px';
+ let tp=null;if(isPAN){const w=mk('div');w.append(mk('label',null,'Application type'));tp=mk('select');['New','Correction'].forEach(x=>tp.append(new Option(x=='New'?'New PAN':'Correction (PAN pehle se bana hai)',x)));tp.value=d.Type=='Correction'?'Correction':'New';if(d.Type=='Correction')tp.disabled=true;w.append(tp);g.append(w)}
+ const keys=D.ord.filter(k=>!SYSK.includes(k));if(isPAN&&!keys.includes('PAN_No'))keys.push('PAN_No');
+ const pageFor=k=>k=='PAN_No'?docNames.find(n=>/oldcard/i.test(n)):(k=='dobtype'||k=='dob')?(docNames.find(n=>/dobproof/i.test(n))||docNames.find(n=>/aadhaar/i.test(n))):/^(mobile|email)$/.test(k)?undefined:docNames.find(n=>/aadhaar/i.test(n));
+ keys.forEach(k=>{const w=mk('div');w.append(mk('label',null,FN[k]||k));let el;if(k=='gender'){el=mk('select');['','Male','Female','Transgender'].forEach(x=>el.append(new Option(x||'--',x)))}else{el=mk('input');if(k=='dob')el.type='date'}el.value=d[k]||'';
+  el.onfocus=async()=>{const pg=pageFor(k);if(!pg)return;if(cur!='__pdf')await open('__pdf');if(sel!=pg){sel=pg;if(loaded)renderPdf()}const w2=stage.querySelectorAll('.pgw'),k2=pageList().indexOf(pg);if(w2[k2])stage.scrollTo({top:w2[k2].offsetTop-stage.offsetTop-4,behavior:'smooth'})};IN[k]=el;w.append(el);g.append(w)});Rp.append(g);
+ /* ===== save / verify ===== */
+ const msg=mk('div','mt');msg.style.cssText='font-weight:600;margin-bottom:6px';
+ async function savePay(needAmt){if(!amI)return true;const v=amI.value.trim();
+  if(needAmt&&!(Number(v)>0)){msg.textContent='❌ Pehle amount likho (Verify se pehle zaroori hai)';amI.focus();return false}
+  if(v!==''&&!/^\d{1,6}(\.\d{1,2})?$/.test(v)){msg.textContent='❌ Amount sahi likho (sirf ank)';return false}
+  const set={};if(v!==''&&Number(v)!==Number(i.amt||0))set.amt=v;
+  if(pyS.value){if(!(Number(v||i.amt)>0)){msg.textContent='❌ Payment aaya hai to pehle amount likho';amI.focus();return false}set.pay='Done';set.mode=pyS.value;if(pyS.value=='Online'&&utI.value.trim())set.utr=utI.value.trim()}
+  if(!Object.keys(set).length)return true;
+  try{const x=await call('aupd',{ids:[i.id],set},60000);if(!x.ok){msg.textContent='❌ '+(x.msg||'amount save nahi hua');return false}
+   const up=o=>{if(set.amt!==undefined)o.amt=Number(set.amt);if(set.pay){o.pay='Done';o.mode=set.mode;if(set.utr)o.utr=set.utr}};up(i);const k=ITEMS.findIndex(y=>y.id==i.id);if(k>=0)up(ITEMS[k]);return true}
+  catch(e){msg.textContent='❌ '+(e.message||'net ki dikkat');return false}}
+ async function doSave(){ /* return 'ok' | 'nochange' | false */
+  const ch={};Object.keys(IN).forEach(k=>{const v=IN[k].value.trim();if(v!==String(d[k]||'').trim())ch[k]=v});
+  if(tp&&!tp.disabled&&tp.value=='Correction')ch.Type='Correction';
+  if(ch.aadhaar&&!/^\d{12}$/.test(ch.aadhaar)){msg.textContent='❌ Aadhaar 12 ank ka hona chahiye';return false}if(ch.mobile&&!/^\d{10}$/.test(ch.mobile)){msg.textContent='❌ Mobile 10 ank ka hona chahiye';return false}if(ch.pincode&&!/^\d{6}$/.test(ch.pincode)){msg.textContent='❌ Pincode 6 ank ka hona chahiye';return false}
+  if(ch.PAN_No)ch.PAN_No=ch.PAN_No.toUpperCase();const effT=ch.Type||d.Type,effP=(ch.PAN_No!==undefined?ch.PAN_No:(d.PAN_No||'')).toUpperCase();
+  if(isPAN&&effT=='Correction'&&!PANRE.test(effP)){msg.textContent='❌ Correction ke liye purana PAN number sahi likho (ABCDE1234F)';return false}
+  if(ch.PAN_No!==undefined&&ch.PAN_No===''&&!d.PAN_No)delete ch.PAN_No;
+  const pgs=Object.keys(REPL),dels=[...DEL],phsn=pgs.some(isPhSn),pdfDirty=PDFNEW||pgs.some(isDoc)||dels.some(isDoc)||phsn;
+  if(!Object.keys(ch).length&&!pgs.length&&!dels.length&&!PDFNEW)return 'nochange';
+  try{const put=[];
+   for(const nm of pgs)put.push({n:rel(nm),t:REPL[nm].type||'image/jpeg',d:await b64(REPL[nm])});
+   const textCh=Object.keys(ch).length;
+   if(textCh){Object.assign(d,ch);Object.keys(ch).forEach(k=>{if(!D.ord.includes(k))D.ord.push(k)})}
+   if(textCh||phsn){msg.textContent='⏳ Application form dobara ban raha hai...';
+    try{svc=i.service;PH={};const pn=pnBlob(),sn=snBlob();if(pn)PH.photo=await createImageBitmap(pn);if(sn)PH.sign=await createImageBitmap(sn);
+     const cen=CEN.find(c=>c.id==i.centerId)||{},cv=document.createElement('canvas');await drawForm(cv,d,d.Type=='Correction'?'Correction':'New',d.Center||i.center||'',cen.email||'');
+     const fb=await new Promise(rs=>cv.toBlob(rs,'image/jpeg',.9));if(!pgs.includes(root+'00_Application_Form_A4.jpg'))put.push({n:'00_Application_Form_A4.jpg',t:'image/jpeg',d:await b64(fb)})}
+    catch(e){toast('⚠️ Form dobara nahi ban paya ('+e.message+'), sirf data badlega')}}
+   if(textCh)put.push({n:'details.txt',t:'text/plain',d:await b64(new Blob([D.ord.map(k=>k+': '+(d[k]==null?'':d[k])).join('\n')],{type:'text/plain'}))});
+   if(pdfDirty){msg.textContent='⏳ Documents ki PDF ban rahi hai...';await loadPages();const L=docNames.concat(ADD).filter(n=>!DEL.has(n)),pg=L.map(n=>REPL[n]||PGB[n]);if(hasPS)pg.push(await composePS());if(pg.length){const pb=await mkPdf(pg,metaFor(L));put.push({n:'All_Documents.pdf',t:'application/pdf',d:await b64(pb)})}else if(pdfName)dels.push(pdfName)}
+   msg.textContent='⏳ Nayi ZIP ban rahi hai, window band mat karo...';
+   const r2=await call('azipput',{id:i.id,put,del:dels.map(rel),set:ch},240000);if(!r2.ok)throw new Error(r2.msg||'ZIP save nahi hui');
+   i.zip=r2.zip;if(ch.name!==undefined)i.name=ch.name;if(ch.mobile!==undefined)i.mobile=ch.mobile;if(ch.Type)i.type=ch.Type;const k=ITEMS.findIndex(x=>x.id==i.id);if(k>=0)Object.assign(ITEMS[k],{zip:i.zip,name:i.name,mobile:i.mobile,type:i.type});cacheSave();return 'ok'}
+  catch(e){msg.textContent='❌ '+(e.message||'dikkat aayi');return false}}
+ const a=mk('div','acts');a.style.marginTop='0';
+ const vb=bt(mode=='rev'?'✅ Review OK — aage bhejo':'✅ Verify ho gaya — aage bhejo','ok big',async function(){
+  if(!confirm('Sab check ho gaya?\n\nVerify karne ke baad ye entry aage ke kaam me chali jayegi aur yahan se edit nahi ho sakegi (dobara edit ke liye "Review me bhejo" karna padega).\nZIP General folder me bhi copy ho jayegi.'))return;
+  this.disabled=sv.disabled=true;if(!(await savePay(true))){this.disabled=sv.disabled=false;return}const s=await doSave();if(s===false){this.disabled=sv.disabled=false;return}
+  msg.textContent='⏳ Verify ho rahi hai, General folder me copy ho rahi hai...';
+  try{const x=await call('aver',{id:i.id,op:'approve'},150000);if(!x.ok)throw new Error(x.msg||'verify nahi hui');i.vs='Done';i.vlink=x.vlink;const k=ITEMS.findIndex(y=>y.id==i.id);if(k>=0){ITEMS[k].vs='Done';ITEMS[k].vlink=x.vlink}ITEMS=ITEMS.filter(y=>noAck(y)||payOpen(y)||qAct(y)||held(y));cacheSave();closeM();toast('✅ Verify ho gayi - aage ke kaam me chali gayi, ZIP General folder me copy ho gayi');render()}
+  catch(e){this.disabled=sv.disabled=false;msg.textContent='❌ '+(e.message||'dikkat aayi')}});
+ const sv=bt('💾 Sirf save karo','',async function(){this.disabled=vb.disabled=true;if(!(await savePay(false))){this.disabled=vb.disabled=false;return}const s=await doSave();this.disabled=vb.disabled=false;if(s==='ok'){closeM();toast('✅ Save ho gaya (abhi verify nahi hui)');render()}else if(s==='nochange'){closeM();toast('✅ Payment/amount save ho gaya');render()}});
+ a.append(vb,sv,bt('Band','',closeM));
+ const sb=mk('div','sbar');sb.append(msg,a);Rp.append(sb);
+ if(docNames.length||pdfName||hasPS)open('__pdf');else{const f=other.find(n=>!/Application_Form/i.test(n))||other[0];if(f)open(f);else stage.append(mk('div','mt','ZIP me koi page nahi'))}}
+
+/* ---------- modals ---------- */
+function ackM(i){const b=mk('div');b.append(mk('div','nm','✏️ '+(i.name||'Entry')),mk('div','mt',(i.center||'')+' · '+(LBL[i.service]||i.service)));
+ const k=mk('input');k.placeholder='Acknowledgement / Application number';k.value=i.ack||'';b.append(mk('label',null,'Ack number'),k);
+ const a=mk('div','acts');a.append(bt('✔ Save','f big',async function(){const v=k.value.trim();if(!v){toast('Ack number likho');return}this.disabled=true;if(await upd([i.id],{ack:v},'Ack save ho gaya'))closeM();else this.disabled=false}),
+  bt('Bina ack complete','',async function(){if(!confirm('Is entry ko bina ack number ke complete maanein? (Gazette jaise kaam ke liye)'))return;if(await upd([i.id],{status:'Complete'},'Complete kar diya'))closeM()}),bt('Band','',closeM));b.append(a);openM(b);setTimeout(()=>k.focus(),100)}
+function editM(i){const b=mk('div');b.append(mk('div','nm','✏️ '+(i.name||'Entry')),mk('div','mt',(i.center||'')+' · '+(LBL[i.service]||i.service)));
+ const fld=(l,el)=>{b.append(mk('label',null,l),el);return el};
+ const ack=fld('Ack number',mk('input'));ack.value=i.ack;
+ const st=fld('Status',mk('input'));st.value=i.status;st.setAttribute('list','stl');const dl=mk('datalist');dl.id='stl';['Received','Pending','Applied','Processing','Ready','Sent','Delivered','Rejected','Review Needed','Complete'].forEach(x=>{const o=mk('option');o.value=x;dl.append(o)});b.append(dl);
+ const py=fld('Payment',mk('select'));[['Pending','💰 Baaki'],['Verify','🔎 Verify baaki'],['Done','✅ Done'],['Rejected','❌ Rejected']].forEach(([v,l])=>py.append(new Option(l,v)));py.value=i.pay;
+ const md=fld('Payment mode',mk('select'));['','Cash','Online'].forEach(v=>md.append(new Option(v||'-- chuno --',v)));md.value=i.mode;
+ const ut=fld('UTR',mk('input'));ut.value=i.utr;
+ const a=mk('div','acts');a.append(bt('✔ Save','f big',async function(){const s={};if(ack.value.trim()!==i.ack)s.ack=ack.value.trim();if(st.value.trim()!==i.status)s.status=st.value.trim();if(py.value!==i.pay)s.pay=py.value;if(md.value!==i.mode)s.mode=md.value;if(ut.value.trim()!==i.utr)s.utr=ut.value.trim();
+  if(!Object.keys(s).length){closeM();return}this.disabled=true;if(await upd([i.id],s,'Save ho gaya'))closeM();else this.disabled=false}),bt('Band','',closeM));b.append(a);openM(b)}
+async function details(i){const b=mk('div');b.append(mk('div','nm',i.name||'(naam nahi)'),mk('div','mt','⏳ Poora data aa raha hai...'));openM(b);
+ try{const r=await call('aget',{id:i.id});b.replaceChildren(mk('div','nm',i.name||'(naam nahi)'),mk('div','mt',(LBL[i.service]||i.service)+' · '+(i.type||'')+' · '+(i.center||'')));
+  if(!r.ok){b.append(mk('div','empty',r.msg||'Data nahi mila'))}else{
+   const skip=['ZipLink','ZipName','CenterID','EntryID','Service','Timestamp','Center','Operator','Type'],box=mk('div');box.style.marginTop='8px';
+   Object.keys(r.f).filter(k=>!skip.includes(k)).forEach(k=>{const row=mk('div','kv');row.append(mk('span',null,FN[k]||k),mk('span',null,r.f[k]),bt('Copy','s',function(){copy(r.f[k],this)}));box.append(row)});b.append(box)}
+  const qb=qBlock(i);if(qb)b.append(qb);const a=mk('div','acts');const z=zipBtn(i);if(z){z.className='btn f big';z.textContent='⬇ ZIP download';a.append(z)}a.append(bt('❓ Query','',()=>raiseM(i)),bt('📤 Upload','',()=>upM(i)),bt('Band','',closeM));b.append(a)}
+ catch(e){if(e.message!='auth')b.append(mk('div','empty','❌ Net ki dikkat, dobara try karo'))}}
+function newM(){const b=mk('div');b.append(mk('div','nm','➕ Nayi Entry (offline documents)'),mk('div','mt','Kisi ne documents seedhe diye hon to center chuno. Entry usi center ke naam par jayegi.'));
+ const s=mk('select');s.append(new Option('-- Center chuno --',''));CEN.filter(x=>x.status=='Approved').forEach(x=>s.append(new Option(x.name,x.id)));if(F.center)s.value=F.center;b.append(mk('label',null,'Center'),s);
+ const a=mk('div','acts');a.append(bt('Form kholo →','f big',()=>{if(!s.value){toast('Pehle center chuno');return}startEntry(s.value)}),bt('Band','',closeM));b.append(a);openM(b)}
+function startEntry(id){const c=CEN.find(x=>x.id==id);if(!c)return;const x=JSON.stringify({t:TOKEN,id:c.id,name:c.name,email:c.email,exp:Date.now()+6*36e5});try{localStorage.admctx=x}catch(e){}try{sessionStorage.adm=x}catch(e){}location.href='index.html?as='+encodeURIComponent(c.id)+'&_='+Date.now()}
+async function search(){const q=$('#q').value.trim();if(q.length<2){toast('Kam se kam 2 akshar likho');return}const b=mk('div');b.append(mk('div','nm','🔎 "'+q+'"'),mk('div','mt','⏳ Dhundh raha hu...'));openM(b);
+ try{const r=await call('asearch',{q});b.replaceChildren(mk('div','nm','🔎 "'+q+'"'));if(!r.ok){b.append(mk('div','empty',r.msg||'error'))}else if(!r.items.length){b.append(mk('div','empty','Koi entry nahi mili'))}else{r.items.forEach(i=>{const c=plain(i);c.style.marginTop='10px';b.append(c)})}b.append(bt('Band','',closeM))}
+ catch(e){if(e.message!='auth')b.append(mk('div','empty','❌ Net ki dikkat'))}}
+
+/* ---------- tabs ---------- */
+function work(){return ITEMS.filter(i=>noAck(i)&&!qAct(i)&&!held(i)).filter(i=>!F.center||i.centerId==F.center)}
+const vlist=f=>ITEMS.filter(f).filter(i=>!F.center||i.centerId==F.center)
+function qrys(){return ITEMS.filter(qAct).filter(i=>!F.center||i.centerId==F.center).sort((a,b)=>(a.qs=='Replied'?0:1)-(b.qs=='Replied'?0:1)||String(a.qu).localeCompare(String(b.qu)))}
+function pays(){return ITEMS.filter(payOpen).filter(i=>!F.center||i.centerId==F.center)}
+function render(){const T=$('#tabs');T.replaceChildren();const cp=CEN.filter(c=>c.status=='Pending').length;
+ [['ver','🔍 Verification pending',ITEMS.filter(inVer).length],['rev','🔁 Review pending',ITEMS.filter(inRev).length],['work','🆕 Kaam baaki',ITEMS.filter(i=>noAck(i)&&!qAct(i)&&!held(i)).length],['pay','💰 Payment baaki',ITEMS.filter(payOpen).length],['qry','❓ Query / Documents',ITEMS.filter(qAct).length],['cen','🏢 Centers',cp]].forEach(([k,l,n])=>{const b=mk('button',TAB==k?'on':'',l);if(n)b.append(mk('span','bdg',n));b.onclick=()=>{TAB=k;LIM=PAGE;render()};T.append(b)});
+ const M=$('#main');M.replaceChildren();if(SRVOLD){const w=mk('div','qb');w.style.cssText='border-color:var(--bad);margin-bottom:10px';w.append(mk('div',null,'⚠️ '+OLDSRV),mk('div','mt','Jab tak ye nahi hoga, naye features (ZIP edit, own-center payment, query email) kaam nahi karenge.'));M.append(w)}
+ if(!LOADED&&TAB!='cen'){const e=mk('div','card');e.style.textAlign='center';if(ERR){e.append(mk('div','nm','⚠️ Data nahi aa paya'),mk('div','mt',ERR),bt('🔄 Dobara try karo','f big',()=>load(true)));e.lastChild.style.marginTop='12px'}else{const sp=mk('div','empty','⏳ Dashboard load ho raha hai...');e.append(sp,mk('div','mt','Pehli baar 20-40 second lag sakte hain. Page band mat karo.'))}M.append(e);return}
+ if(TAB=='cen'){cen(M);return}
+ const cs=mk('select');cs.style.marginBottom='10px';cs.append(new Option('Sab center',''));const seen={};ITEMS.forEach(i=>{if(i.centerId&&!seen[i.centerId]){seen[i.centerId]=1}});CEN.filter(c=>seen[c.id]).forEach(c=>cs.append(new Option(c.name,c.id)));cs.value=F.center;cs.onchange=()=>{F.center=cs.value;LIM=PAGE;render()};M.append(cs);
+ let L;if(TAB=='ver'){L=vlist(inVer);M.append(mk('div','sub','Nayi entries · jo pehle aayi wo upar · '+L.length+' verify karni baaki'))}
+ else if(TAB=='rev'){L=vlist(inRev);M.append(mk('div','sub','Review ke liye wapas aayi entries · '+L.length))}
+ else if(TAB=='work'){L=work();M.append(mk('div','sub','Jo pehle aaya wo sabse upar · '+L.length+' kaam baaki'))}
+ else if(TAB=='qry'){L=qrys();const rp=L.filter(i=>i.qs=='Replied').length;M.append(mk('div','sub','Pehle wo jinke documents aa gaye · '+rp+' check karna baaki, '+(L.length-rp)+' center ke jawab ka wait'))}
+ else{const all=pays(),v=all.filter(i=>i.pay=='Verify').length,P=mk('div','pills');[['','Sab ('+all.length+')'],['Verify','🔎 Verify ('+v+')'],['Pending','💰 Baaki ('+(all.length-v)+')']].forEach(([k,l])=>{const p=mk('button','pill'+(F.pay==k?' on':''),l);p.onclick=()=>{F.pay=k;LIM=PAGE;render()};P.append(p)});M.append(P);
+  L=all.filter(i=>!F.pay||(F.pay=='Verify'?i.pay=='Verify':i.pay!='Verify'));const tot=all.reduce((s,x)=>s+(x.amt||0),0),noA=all.filter(x=>!x.own&&!(x.amt>0)).length;M.append(mk('div','sub','Jo pehle aaya wo sabse upar · '+L.length+' payment baaki · Total baaki amount: '+rs(tot)+(noA?' · ⚠️ '+noA+' entries ka amount set nahi':'')));
+  const grp={};all.filter(x=>x.pay=='Verify'&&x.utr).forEach(x=>{(grp[x.utr]=grp[x.utr]||[]).push(x)});Object.keys(grp).filter(u=>grp[u].length>1&&(!F.pay||F.pay=='Verify')).forEach(u=>{const g=grp[u],sum=g.reduce((s,x)=>s+(x.amt||0),0),c=mk('div','card');c.style.borderColor='var(--info)';c.append(mk('div','nm','🔗 Ek saath payment · '+g.length+' entries · '+rs(sum)),mk('div','mt',(g[0].center||'')+' · UTR '+u));const a=mk('div','acts');a.append(bt('✅ Sab '+g.length+' approve ('+rs(sum)+')','ok big',()=>upd(g.map(x=>x.id),{pay:'Done'},g.length+' entries ka payment Done')),bt('❌ Sab reject','bad',()=>upd(g.map(x=>x.id),{pay:'Rejected'},'Reject kar diya')));if(g[0].proof){const z=mk('a','btn s','🖼 Screenshot');z.href=g[0].proof;z.target='_blank';z.rel='noopener';a.append(z)}c.append(a);M.append(c)})}
+ const box=mk('div');box.style.marginTop='10px';M.append(box);
+ if(!L.length){box.append(mk('div','empty',TAB=='ver'?'🎉 Koi entry verify karne ke liye baaki nahi':TAB=='rev'?'Review me koi entry nahi hai':TAB=='work'?'🎉 Koi kaam baaki nahi':TAB=='qry'?'Koi query open nahi hai':'🎉 Koi payment baaki nahi'));return}
+ L.slice(0,LIM).forEach((i,k)=>box.append(TAB=='ver'||TAB=='rev'?verCard(i,k+1):TAB=='work'?workCard(i,k+1):TAB=='qry'?qryCard(i,k+1):payCard(i,k+1)));
+ if(L.length>LIM)box.append(bt('Aur dikhao ('+(L.length-LIM)+' baaki)','f big',()=>{LIM+=PAGE;render()}))}
+function cen(M){const c0=mk('div','card');c0.append(mk('div','nm','➕ Naya Center jodo'));const n=mk('input'),m=mk('input'),e=mk('input');n.placeholder='Center ka naam';m.placeholder='Mobile (10 ank)';m.setAttribute('inputmode','numeric');m.maxLength=10;e.placeholder='Email (isi par ID/PIN jayega)';e.type='email';
+ [n,m,e].forEach(x=>x.style.marginTop='8px');c0.append(n,m,e);const ad=bt('Center banao + ID/PIN email karo','f',async function(){this.disabled=true;try{const r=await call('acen',{op:'add',name:n.value,mobile:m.value,email:e.value});toast((r.ok?'✅ ':'❌ ')+r.msg);if(r.ok){n.value=m.value=e.value='';load()}}catch(x){}this.disabled=false});ad.style.marginTop='10px';c0.append(ad);M.append(c0);
+ const cnt={};ITEMS.forEach(i=>{const x=cnt[i.centerId]=cnt[i.centerId]||{a:0,p:0};if(noAck(i))x.a++;if(payOpen(i))x.p++});
+ CEN.slice().sort((a,b)=>(a.status=='Pending'?0:1)-(b.status=='Pending'?0:1)).forEach(c=>{const d=mk('div','card'),r=mk('div','row'),l=mk('div'),x=cnt[c.id]||{a:0,p:0};l.append(mk('div','nm',c.name),mk('div','mt',c.mobile+' · '+c.email),mk('div','mt','Kaam baaki '+x.a+' · Payment baaki '+x.p));
+  r.append(l,mk('span','tag '+(c.status=='Approved'?'s-ok':c.status=='Blocked'?'s-bad':'s-warn'),c.status));d.append(r);
+  const a=mk('div','acts');const op=(l,o,cl,ask)=>bt(l,'s '+(cl||''),async()=>{if(ask&&!confirm(ask))return;try{const r=await call('acen',{op:o,id:c.id});toast((r.ok?'✅ ':'❌ ')+r.msg);if(r.ok)load()}catch(x){}});
+  if(c.status!='Approved'&&c.status!='Blocked')a.append(op('✅ Approve karo','approve','ok'));if(c.status=='Approved')a.append(bt('➕ Entry banao','s f',()=>startEntry(c.id)),op('🔑 Nayi PIN','pin','','Nayi PIN email par bhejein? Purani PIN band ho jayegi.'),op('🚫 Block','block','bad','Is center ko block karein? Wo login nahi kar payega.'));if(c.status=='Blocked')a.append(op('Unblock','unblock'));d.append(a);M.append(d)})}
+
+/* ---------- login ---------- */
+function logout(){TOKEN='';localStorage.removeItem('atok');localStorage.removeItem('acache');show()}
+function show(){$('#app').style.display=TOKEN?'block':'none';$('#lg').style.display=TOKEN?'none':'block';
+ if(TOKEN){try{const c=JSON.parse(localStorage.acache||'null');if(c){ITEMS=c.items||[];CEN=c.cen||[];LOADED=true;render();$('#upd').textContent='Purana data dikh raha hai, taaza aa raha hai...'}}catch(e){}if(!LOADED)render();load()}}
+async function doLogin(){const m=$('#lm');m.textContent='⏳ Check ho raha hai...';try{const r=await api({a:'alogin',pin:$('#lpin').value});if(!r.ok){m.textContent='❌ '+r.msg;return}TOKEN=r.t;localStorage.atok=TOKEN;$('#lpin').value='';m.textContent='';show()}catch(e){m.textContent='❌ Net ya server ki dikkat'}}
+$('#lb').onclick=doLogin;$('#lpin').onkeydown=e=>{if(e.key=='Enter')doLogin()};
+$('#rf').onclick=()=>load(true);$('#lo').onclick=logout;$('#ne').onclick=newM;$('#qb').onclick=search;$('#q').onkeydown=e=>{if(e.key=='Enter')search()};
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&TOKEN&&Date.now()-LAST>120000)load()});
+if(/PASTE/.test(SHEET_URL)){$('#lm').textContent='⚙️ SHEET_URL daalna baaki hai';$('#lb').disabled=true}
+$('#ver').textContent=VER;
+show();
+</script></body></html>
+us:9px;border:1px solid var(--p);background:none;color:var(--p);font-weight:600;cursor:pointer;font-size:14px;display:inline-block;text-align:center}
 .btn.f{background:var(--p);color:#fff}.btn.ok{background:var(--ok);border-color:var(--ok);color:#fff}.btn.bad{border-color:var(--bad);color:var(--bad)}.btn.s{padding:6px 10px;font-size:13px}.btn.big{padding:11px 16px;font-size:15px}
 .btn:disabled{opacity:.5}
 input,select,textarea{padding:10px;border:1px solid var(--b);border-radius:9px;background:var(--c);color:var(--t);font:inherit;width:100%}
