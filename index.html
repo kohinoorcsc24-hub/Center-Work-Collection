@@ -33,7 +33,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--b);border-r
 #cam video{max-width:94vw;max-height:70vh;border-radius:10px}
 #msg{margin-top:10px;font-weight:600}
 #ed,#op,#pv,#lg{position:fixed;inset:0;background:#000d;display:none;overflow:auto;z-index:10;padding:10px}.eb{background:var(--c);max-width:560px;margin:auto;padding:12px;border-radius:12px}
-#ec{max-width:100%;touch-action:none;display:block;margin:8px auto}#ep{max-width:100%;display:block;margin:6px auto;background:repeating-conic-gradient(#ccc 0 25%,#fff 0 50%) 0 0/16px 16px;border:1px solid var(--b)}.eb .r{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+#ew{max-height:56vh;overflow:auto;border:1px solid var(--b);border-radius:8px;background:#2b2f3a;margin:8px 0;text-align:center;-webkit-overflow-scrolling:touch}#ec{max-width:none;touch-action:none;display:inline-block;vertical-align:top}#ew.pan #ec{touch-action:auto;cursor:grab}#zl{font-size:13px;min-width:44px;text-align:center;align-self:center}#ep{max-width:100%;display:block;margin:6px auto;background:repeating-conic-gradient(#ccc 0 25%,#fff 0 50%) 0 0/16px 16px;border:1px solid var(--b)}.eb .r{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
 #busy{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;background:rgba(10,15,30,.62);backdrop-filter:blur(2px);padding:16px}
 #busy .bx{background:var(--c);color:var(--t);border:1px solid var(--b);border-radius:16px;padding:28px 24px 22px;width:100%;max-width:360px;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.35)}
 #busy .sp{width:58px;height:58px;margin:0 auto 18px;border:6px solid var(--b);border-top-color:var(--p);border-radius:50%;animation:bspin .9s linear infinite}
@@ -79,8 +79,10 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--b);border-r
 <div class="r" style="margin-top:14px"><button class="btn f" id="pvok">✔ Sab sahi hai, ZIP banao</button><button class="btn" id="pvx">← Wapas jao (edit)</button></div></div></div>
 <div id="op"><div class="eb"><b>Submit se pehle details bharo</b><label style="margin-top:8px">Center ka naam *</label><input id="cn"><label style="margin-top:8px">Operator ka naam *</label><input id="on">
 <div class="r"><button class="btn f" id="opok">Aage badho</button><button class="btn" id="opx">Cancel</button></div></div></div>
-<div id="ed"><div class="eb"><b id="et"></b><canvas id="ec"></canvas>
-<div id="eo" style="display:none"><label><input type="checkbox" id="bg" checked style="width:auto"> Background hatao (signature)</label><input type="range" id="th" min="60" max="250" value="170"><canvas id="ep"></canvas></div>
+<div id="ed"><div class="eb"><b id="et"></b>
+<div class="r" id="ezb" style="margin:6px 0 0"><button class="btn" id="zm">➖</button><span id="zl">100%</span><button class="btn" id="zp">➕ Zoom</button><button class="btn" id="zf">Fit</button><button class="btn" id="pn">✋ Khiskao (scroll)</button></div>
+<div id="ew"><canvas id="ec"></canvas></div>
+<div id="eo" style="display:none"><label><input type="checkbox" id="bg" checked style="width:auto"> Background hatao (signature)</label><input type="range" id="th" min="60" max="250" value="170"><label style="margin-top:6px">Signature ko mota / dark karo (visible ke liye)<input type="range" id="bd" min="0" max="3" value="1"></label><canvas id="ep"></canvas></div>
 <div class="r"><button class="btn f" id="ok">✔ Crop + Save</button><button class="btn" id="ac">🤖 Auto Crop</button><button class="btn" id="rt">🔄 Rotate</button><button class="btn" id="sk">Skip (jaisa hai)</button><button class="btn" id="xx">Cancel</button></div></div></div>
 <div id="cam"><video id="vid" autoplay playsinline></video>
 <div><button class="btn f" id="snap">📸 Photo lo</button> <button class="btn" id="cx" style="background:#fff">Band karo</button></div></div>
@@ -110,7 +112,7 @@ $('#f').innerHTML=`<div class="card"><h2>Application type</h2><select id="kind" 
 <div class="card"><h2>Documents</h2><div id="old" style="display:none">${doc('oldcard',c.old+' (Front)')}${doc('oldcard_back',c.old+' (Back, agar ho)',1)}</div><div id="dyn">${docList().map(d=>doc(d[0],d[1],d[2])).join('')}</div>${doc('extra','Extra Image (optional)',1)}</div>`}
 function ckChg(el){if(document.querySelectorAll('.ck:checked').length>4){el.checked=false;alert('Ek baar me sirf 4 hi chun sakte ho')}reDocs()}
 function kindCh(){const cr=$('#kind').value=='Correction',o=$('#oldno');$('#old').style.display=cr?'block':'none';const ks=$('#cks');if(ks)ks.style.display=cr?'block':'none';reDocs();if(o){o.style.display=cr?'block':'none';o.querySelector('input').required=cr}}
-function pick(k,file){if(!file)return;orig[k]=file;if(!file.type.startsWith('image/'))return setF(k,file);const m=modeOf(k);if(m=='photo'||(svc=='PAN'&&/^(aadhaar|dobproof)/.test(k)))edit(k);else autoSave(k,file,m)}
+function pick(k,file){if(!file)return;orig[k]=file;if(!file.type.startsWith('image/'))return setF(k,file);const m=modeOf(k);if(m=='photo'||m=='sign'||(svc=='PAN'&&/^(aadhaar|dobproof)/.test(k)))edit(k);else autoSave(k,file,m)}
 function paint(k,file){const d=$('#d_'+k);if(!d)return;d.querySelector('.fn').textContent='✔ '+file.name;d.querySelector('img')?.remove();d.querySelector('.ed').style.display=orig[k]?.type.startsWith('image/')?'':'none';if(file.type.startsWith('image/')){const i=new Image();i.src=URL.createObjectURL(file);d.append(i)}}
 function setF(k,file){files[k]=file;paint(k,file);if(file.type.startsWith('image/')){if(k.startsWith('aadhaar'))autofill(k,file);if(k.startsWith('oldcard'))autofillOld(k,file);if(/^(nameproof|relproof|dobproof|addrproof|genproof)_1$/.test(k))autofillProof(k,file)}}
 function docList(){const c=CFG[svc];if(svc!='Voter'||$('#kind')?.value!='Correction')return c.docs;
@@ -477,22 +479,27 @@ let EK,EI,ES,RC,dr;const ec=$('#ec');
 async function edit(k){EK=k;let url='';const ai=svc=='PAN'&&/^(aadhaar|dobproof)/.test(k),fn=$('#d_'+k)?.querySelector('.fn');
 if(ai){if(fn)fn.textContent='⏳ AI crop ho raha hai (pehli baar 10-40 sec lagte hain)...';try{const bm=await createImageBitmap(orig[k]),w=await aiCrop(toCanvas(bm,3000));if(w){const b=await new Promise(r=>w.toBlob(r,'image/jpeg',.92));url=URL.createObjectURL(b)}}catch(e){}
  if(fn)fn.textContent='✔ '+orig[k].name+(url?' | 🤖 AI crop laga diya, check karke ✔ Crop + Save dabao (uske baad hi OCR chalega)':' | ✂️ crop check karke ✔ Crop + Save dabao (uske baad hi OCR chalega)')}
-const i=new Image();i.onload=()=>{RT=0;fit(i);const m=modeOf(k);$('#ac').onclick();$('#eo').style.display=m=='sign'?'block':'none';$('#et').textContent='Crop: drag karke area chuno'+(m=='photo'?' (passport size)':'');$('#ed').style.display='block';draw()};i.src=url||URL.createObjectURL(orig[k])}
-let RT=0;function fit(i){EI=i;ES=Math.min(Math.min(520,innerWidth-50)/i.width,innerHeight*.5/i.height,1);ec.width=i.width*ES;ec.height=i.height*ES;RC=[0,0,ec.width,ec.height]}
+const i=new Image();i.onload=()=>{RT=0;PANM=0;$('#ew').classList.remove('pan');$('#pn').textContent='✋ Khiskao (scroll)';$('#pn').className='btn';fit(i);const m=modeOf(k);$('#ac').onclick();$('#eo').style.display=m=='sign'?'block':'none';$('#et').textContent=m=='sign'?'Signature crop: sirf signature wala hissa drag karke chuno (zoom karke saaf chuno)':'Crop: drag karke area chuno'+(m=='photo'?' (passport size) — chhoti photo ke liye ➕ Zoom karo':'');$('#ed').style.display='block';draw()};i.src=url||URL.createObjectURL(orig[k])}
+let RT=0,ZM=1,BASE=1,PANM=0;function fit(i){EI=i;BASE=Math.min(Math.min(520,innerWidth-50)/i.width,innerHeight*.5/i.height,1);ZM=1;ES=BASE;ec.width=i.width*ES;ec.height=i.height*ES;RC=[0,0,ec.width,ec.height];$('#zl').textContent='100%'}
+function setZoom(z){const mx=Math.min(6,Math.sqrt(6e6/(EI.width*EI.height*BASE*BASE)));z=Math.max(1,Math.min(mx,z));if(z==ZM)return;const wr=$('#ew'),ix=(wr.scrollLeft+wr.clientWidth/2)/ES,iy=(wr.scrollTop+wr.clientHeight/2)/ES,r=z/ZM;RC=RC.map(v=>v*r);ZM=z;ES=BASE*ZM;ec.width=EI.width*ES;ec.height=EI.height*ES;draw();wr.scrollLeft=ix*ES-wr.clientWidth/2;wr.scrollTop=iy*ES-wr.clientHeight/2;$('#zl').textContent=Math.round(ZM*100)+'%'}
+$('#zp').onclick=()=>setZoom(ZM*1.6);$('#zm').onclick=()=>setZoom(ZM/1.6);$('#zf').onclick=()=>setZoom(1);
+$('#pn').onclick=()=>{PANM=1-PANM;$('#ew').classList.toggle('pan',!!PANM);$('#pn').textContent=PANM?'✂️ Crop karo':'✋ Khiskao (scroll)';$('#pn').className=PANM?'btn f':'btn'}
 function draw(){const x=ec.getContext('2d'),[a,b,w,h]=RC,X=Math.min(a,a+w),Y=Math.min(b,b+h),W=Math.abs(w),H=Math.abs(h);x.drawImage(EI,0,0,ec.width,ec.height);x.fillStyle='#0008';x.fillRect(0,0,ec.width,ec.height);if(W>2&&H>2)x.drawImage(EI,X/ES,Y/ES,W/ES,H/ES,X,Y,W,H);x.strokeStyle='#1e5eff';x.lineWidth=2;x.strokeRect(X,Y,W,H);if(modeOf(EK)=='sign')prev()}
 const pt=e=>{const r=ec.getBoundingClientRect();return[Math.max(0,Math.min(ec.width,(e.clientX-r.left)*ec.width/r.width)),Math.max(0,Math.min(ec.height,(e.clientY-r.top)*ec.height/r.height))]};
-ec.onpointerdown=e=>{ec.setPointerCapture(e.pointerId);const[x,y]=pt(e);RC=[x,y,0,0];dr=1};
+ec.onpointerdown=e=>{if(PANM)return;ec.setPointerCapture(e.pointerId);const[x,y]=pt(e);RC=[x,y,0,0];dr=1};
 ec.onpointermove=e=>{if(!dr)return;const[x,y]=pt(e);let w=x-RC[0],h=y-RC[1];if(modeOf(EK)=='photo'){h=Math.sign(h||1)*Math.abs(w)/.7778;if(RC[1]+h<0||RC[1]+h>ec.height)return}RC[2]=w;RC[3]=h;draw()};
 ec.onpointerup=()=>dr=0;
 function crop(mx=1800){let[a,b,w,h]=RC;if(Math.abs(w)<8||Math.abs(h)<8)[a,b,w,h]=[0,0,ec.width,ec.height];const X=Math.min(a,a+w)/ES,Y=Math.min(b,b+h)/ES,W=Math.abs(w)/ES,H=Math.abs(h)/ES,sc=Math.min(1,mx/Math.max(W,H)),o=document.createElement('canvas');o.width=W*sc;o.height=H*sc;o.getContext('2d').drawImage(EI,X,Y,W,H,0,0,o.width,o.height);return o}
 function bgrm(o){const x=o.getContext('2d'),d=x.getImageData(0,0,o.width,o.height),p=d.data,t=+$('#th').value;for(let i=0;i<p.length;i+=4){const l=.3*p[i]+.59*p[i+1]+.11*p[i+2];p[i+3]=l>=t?0:Math.min(255,(t-l)*6)}x.putImageData(d,0,0);return o}
-function prev(){const o=crop(400),q=$('#ep');if($('#bg').checked)bgrm(o);q.width=o.width;q.height=o.height;q.getContext('2d').drawImage(o,0,0)}
-$('#th').oninput=prev;$('#bg').onchange=prev;
+function sigFx(o){bgrm(o);const lv=+$('#bd').value,x=o.getContext('2d'),d=x.getImageData(0,0,o.width,o.height),p=d.data;for(let i=0;i<p.length;i+=4)if(p[i+3]>0){p[i]=18;p[i+1]=18;p[i+2]=30;p[i+3]=Math.min(255,p[i+3]*(1+.5*lv))}x.putImageData(d,0,0);
+ if(lv>0){const sf=Math.max(1,Math.round(Math.max(o.width,o.height)/450)),r=Math.min(8,lv*sf),t=document.createElement('canvas');t.width=o.width;t.height=o.height;const c=t.getContext('2d');c.drawImage(o,0,0);for(let rad=1;rad<=r;rad++)for(let a=0;a<8;a++){const an=a*Math.PI/4;c.drawImage(o,Math.round(Math.cos(an)*rad),Math.round(Math.sin(an)*rad))}x.clearRect(0,0,o.width,o.height);x.drawImage(t,0,0)}return o}
+function prev(){const o=crop(400),q=$('#ep');if($('#bg').checked)sigFx(o);q.width=o.width;q.height=o.height;q.getContext('2d').drawImage(o,0,0)}
+$('#th').oninput=prev;$('#bd').oninput=prev;$('#bg').onchange=prev;
 $('#xx').onclick=()=>$('#ed').style.display='none';
 $('#ac').onclick=()=>{const m=modeOf(EK),bx=m=='photo'?null:autoBox(EI),w=ec.width,h=ec.height;if(bx&&bx.w*bx.h<0.97)RC=[bx.x*w,bx.y*h,bx.w*w,bx.h*h];else if(m=='photo'){const pw=Math.min(w,h*.7778);RC=[(w-pw)/2,0,pw,pw/.7778]}else RC=[0,0,w,h];draw()};
 $('#rt').onclick=()=>{const c=document.createElement('canvas');c.width=EI.height;c.height=EI.width;const x=c.getContext('2d');x.translate(c.width,0);x.rotate(Math.PI/2);x.drawImage(EI,0,0);RT=1;fit(c);draw()};
 $('#sk').onclick=()=>{$('#ed').style.display='none';if(!RT)return setF(EK,orig[EK]);const o=document.createElement('canvas');o.width=EI.width;o.height=EI.height;o.getContext('2d').drawImage(EI,0,0);o.toBlob(b=>setF(EK,new File([b],EK+'.jpg',{type:'image/jpeg'})),'image/jpeg',.92)};
 function askOp(){return new Promise(r=>{$('#cn').value=localStorage.cname||'';$('#on').value=localStorage.opname||'';$('#op').style.display='block';$('#opx').onclick=()=>{$('#op').style.display='none';r(null)};$('#opok').onclick=()=>{const c=$('#cn').value.trim(),o=$('#on').value.trim();if(!c||!o){alert('Center aur Operator dono ka naam likho');return}localStorage.cname=c;localStorage.opname=o;$('#op').style.display='none';r([c,o])}})}
-$('#ok').onclick=()=>{const o=crop(),sg=modeOf(EK)=='sign'&&$('#bg').checked,ty=sg?'image/png':'image/jpeg';if(sg)bgrm(o);o.toBlob(b=>{setF(EK,new File([b],EK+(sg?'.png':'.jpg'),{type:ty}));$('#ed').style.display='none'},ty,.92)};
+$('#ok').onclick=()=>{const o=crop(),sg=modeOf(EK)=='sign'&&$('#bg').checked,ty=sg?'image/png':'image/jpeg';if(sg)sigFx(o);o.toBlob(b=>{setF(EK,new File([b],EK+(sg?'.png':'.jpg'),{type:ty}));$('#ed').style.display='none'},ty,.92)};
 render();hdr();gate();
 </script></body></html>
