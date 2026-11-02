@@ -70,7 +70,7 @@ label{display:block;font-size:13px;font-weight:600;margin:10px 0 4px}
 <script>
 const SHEET_URL='https://script.google.com/macros/s/AKfycbzhjpoBnoFRetrxUOGUxcFOXKFekJuBE4zlGmKTMyI-wfhYsvoop2er23IE2JBcQqDv/exec';
 const $=s=>document.querySelector(s),LBL={PAN:'PAN Card',Voter:'Election',Gazette:'Gazette'},DONE=/sent|complete|done|deliver/i,PAGE=30;
-const FN={name:'Naam',newname:'Naya naam',oldname:'Purana naam',father:'Father',mother:'Mother',spouse:'Husband/Wife',dob:'DOB',mobile:'Mobile',aadhaar:'Aadhaar',address:'Address',flat:'Flat/Door/Building',road:'Road/Street',po:'Post Office',area:'Area/Town',district:'District',state:'State',pincode:'Pincode',gender:'Gender',email:'Email',PAN_No:'Purana PAN',EPIC_No:'Purana EPIC',Center:'Center',Operator:'Operator',Type:'Type'};
+const FN={proof_identity:'Identity Proof',proof_address:'Address Proof',proof_dob:'DOB Proof',proof_pan:'PAN Proof (Correction)',name:'Naam',newname:'Naya naam',oldname:'Purana naam',father:'Father',mother:'Mother',spouse:'Husband/Wife',dob:'DOB',mobile:'Mobile',aadhaar:'Aadhaar',address:'Address',flat:'Flat/Door/Building',road:'Road/Street',po:'Post Office',area:'Area/Town',district:'District',state:'State',pincode:'Pincode',gender:'Gender',email:'Email',PAN_No:'Purana PAN',EPIC_No:'Purana EPIC',Center:'Center',Operator:'Operator',Type:'Type'};
 let TOKEN=localStorage.atok||'',ITEMS=[],CEN=[],TAB=(new URLSearchParams(location.search).get('tab')=='rev'?'rev':'ver'),BUSY=false,LAST=0,LIM=PAGE,LOADED=false,ERR='',SRVOLD=false;const VER='v11',REQV='v11';
 const F={center:'',pay:''};
 function mk(t,c,x){const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
@@ -208,6 +208,7 @@ const PROOF_AD=['AADHAAR Card issued by UIDAI (In Copy)',"Elector's photo identi
 /* [portal me dikhne wala poora naam, form par chhota naam] */
 const PROOF_DOB=[['AADHAAR Card issued by UIDAI (In Copy)','AADHAAR CARD'],['Birth Certificate issued by the Municipal Authority or any office authorized to issue Birth and Death Certificate by the Registrar of Birth and Deaths or the Indian Consulate','BIRTH CERTIFICATE'],['Pension payment order','PENSION PAYMENT ORDER'],['Marriage certificate issued by Registrar of Marriages','MARRIAGE CERTIFICATE'],['Matriculation certificate','MATRICULATION CERTIFICATE'],['Driving License','DRIVING LICENSE'],['Affidavit sworn before a magistrate stating the date of birth','AFFIDAVIT'],['Matriculation Marksheet of recognised board','MATRICULATION MARKSHEET'],["Elector's photo identity card",'ELECTOR PHOTO ID CARD'],['Photo identity card issued by the Central Government or State Government or Public Sector Undertaking. श्रम कार्ड / अन्य कोई भी गवर्नमेंट आई-कार्ड','GOVT PHOTO ID CARD'],['Central Government Health Scheme Card आयुष्मान कार्ड / आभा कार्ड','CGHS / AYUSHMAN / ABHA CARD'],['Ex-Servicemen Contributory Health Scheme photo card','EX-SERVICEMEN HEALTH CARD'],['Passport','PASSPORT']];
 const guessDob=d=>{if(d.proof_dob)return d.proof_dob;const t=String(d.dobtype||'').toLowerCase().replace(/[^a-z]/g,'');if(!t)return'';const m=PROOF_DOB.find(x=>x[1].toLowerCase().replace(/[^a-z]/g,'')==t||x[0].toLowerCase().replace(/[^a-z]/g,'').startsWith(t));return m?m[0]:''};
+const PROOF_PAN=['Copy of FIR','Copy of PAN Allotment Letter','Copy of PAN Card','No Document'];
 const OLDSRV='Apps Script me Code.gs purani hai. Nayi Code.gs paste karke Save karo, phir Deploy → Manage deployments → Edit → New version → Deploy karo.';
 async function zipEdit(i,mode){try{await zipEdit0(i,mode||'ver')}catch(e){if(e.message!='auth'){const x=mk('div');x.append(mk('div','nm','🔍 Verification'),mk('div','empty','❌ '+e.message),bt('Band','',closeM));openM(x)}}}
 /* ===== All_Documents.pdf: saare document pages (A4 JPG) ek PDF me ===== */
@@ -311,12 +312,15 @@ async function zipEdit0(i,mode){const PS='__ps',b=mk('div');b.append(mk('div','n
   const w3=mk('div');w3.append(mk('label',null,'UTR (online ho to, optional)'));utI=mk('input');utI.placeholder='UTR number';w3.append(utI);w3.style.display='none';pyS.onchange=()=>{w3.style.display=pyS.value=='Online'?'block':'none'};
   gx.append(w1,w2,w3);payBox.append(gx,mk('div','mt','Cash/Online chunoge to payment seedha Done ho jayega aur center ke baaki amount se kat jayega.'))}
  Rp.append(payBox);
- let idSel=null,adSel=null,doSel=null;
+ let idSel=null,adSel=null,doSel=null,paSel=null,paW=null,showPA=()=>{};
  if(isPAN){const pb=mk('div','qb');pb.style.cssText='margin:0 0 6px;border-color:var(--info);background:rgba(11,111,184,.06)';pb.append(mk('div',null,'📑 Proof selection (PAN portal ke liye)'));
   const mkSel=(label,opts,val,req)=>{const w=mk('div');const lb=mk('label',null,label+(req?' *':''));if(req)lb.style.color='var(--bad)';w.append(lb);const sl=mk('select');sl.append(new Option(req?'-- DOB proof chuno (zaroori) --':'-- chuno --',''));opts.forEach(o=>sl.append(new Option(Array.isArray(o)?o[0]:o,Array.isArray(o)?o[0]:o)));sl.value=val||'';if(val&&sl.value!==val)sl.value='';w.append(sl);pb.append(w);return sl};
-  idSel=mkSel('Identity Proof',PROOF_ID,d.proof_identity||PROOF_ID[0],false);adSel=mkSel('Address Proof',PROOF_AD,d.proof_address||PROOF_AD[0],false);doSel=mkSel('DOB Proof',PROOF_DOB,guessDob(d),true);Rp.append(pb)}
+  idSel=mkSel('Identity Proof',PROOF_ID,d.proof_identity||PROOF_ID[0],false);adSel=mkSel('Address Proof',PROOF_AD,d.proof_address||PROOF_AD[0],false);doSel=mkSel('DOB Proof',PROOF_DOB,guessDob(d),true);
+  paW=mk('div');const pl=mk('label',null,'PAN Proof (Correction ke liye)');paW.append(pl);paSel=mk('select');[['','-- PAN proof chuno --']].concat(PROOF_PAN.map(x=>[x,x])).forEach(([v,l])=>paSel.append(new Option(l,v)));paSel.value=d.proof_pan||'Copy of PAN Card';paW.append(paSel);pb.append(paW);
+  showPA=()=>{const corr=d.Type=='Correction'||(tp&&tp.value=='Correction');paW.style.display=corr?'block':'none'};Rp.append(pb)}
  Rp.append(mk('h2',null,'✏️ Data (galti ho to yahi sahi karo)'));const g=mk('div');g.style.cssText='display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:2px 10px';
- let tp=null;if(isPAN){const w=mk('div');w.append(mk('label',null,'Application type'));tp=mk('select');['New','Correction'].forEach(x=>tp.append(new Option(x=='New'?'New PAN':'Correction (PAN pehle se bana hai)',x)));tp.value=d.Type=='Correction'?'Correction':'New';if(d.Type=='Correction')tp.disabled=true;w.append(tp);g.append(w)}
+ let tp=null;if(isPAN){const w=mk('div');w.append(mk('label',null,'Application type'));tp=mk('select');['New','Correction'].forEach(x=>tp.append(new Option(x=='New'?'New PAN':'Correction (PAN pehle se bana hai)',x)));tp.value=d.Type=='Correction'?'Correction':'New';if(d.Type=='Correction')tp.disabled=true;tp.onchange=showPA;w.append(tp);g.append(w)}
+ if(isPAN)showPA();
  const keys=D.ord.filter(k=>!SYSK.includes(k));if(isPAN&&!keys.includes('PAN_No'))keys.push('PAN_No');
  const pageFor=k=>k=='PAN_No'?docNames.find(n=>/oldcard/i.test(n)):(k=='dobtype'||k=='dob')?(docNames.find(n=>/dobproof/i.test(n))||docNames.find(n=>/aadhaar/i.test(n))):/^(mobile|email)$/.test(k)?undefined:docNames.find(n=>/aadhaar/i.test(n));
  keys.forEach(k=>{const w=mk('div');w.append(mk('label',null,FN[k]||k));let el;if(k=='gender'){el=mk('select');['','Male','Female','Transgender'].forEach(x=>el.append(new Option(x||'--',x)))}else{el=mk('input');if(k=='dob')el.type='date'}el.value=d[k]||'';
@@ -335,7 +339,7 @@ async function zipEdit0(i,mode){const PS='__ps',b=mk('div');b.append(mk('div','n
  async function doSave(){ /* return 'ok' | 'nochange' | false */
   const ch={};Object.keys(IN).forEach(k=>{const v=IN[k].value.trim();if(v!==String(d[k]||'').trim())ch[k]=v});
   if(tp&&!tp.disabled&&tp.value=='Correction')ch.Type='Correction';
-  if(isPAN&&doSel){const pd=doSel.value,pi=idSel.value,pa=adSel.value;if(pd!==String(d.proof_dob||'')){ch.proof_dob=pd;const sh=PROOF_DOB.find(x=>x[0]==pd);if(pd&&sh)ch.dobtype=sh[1]}if(pi&&pi!==String(d.proof_identity||''))ch.proof_identity=pi;if(pa&&pa!==String(d.proof_address||''))ch.proof_address=pa}
+  if(isPAN&&doSel){const pd=doSel.value,pi=idSel.value,pa=adSel.value;if(pd!==String(d.proof_dob||'')){ch.proof_dob=pd;const sh=PROOF_DOB.find(x=>x[0]==pd);if(pd&&sh)ch.dobtype=sh[1]}if(pi&&pi!==String(d.proof_identity||''))ch.proof_identity=pi;if(pa&&pa!==String(d.proof_address||''))ch.proof_address=pa;if(paSel&&(ch.Type||d.Type)=='Correction'&&paSel.value!==String(d.proof_pan||''))ch.proof_pan=paSel.value}
   if(ch.aadhaar&&!/^\d{12}$/.test(ch.aadhaar)){msg.textContent='❌ Aadhaar 12 ank ka hona chahiye';return false}if(ch.mobile&&!/^\d{10}$/.test(ch.mobile)){msg.textContent='❌ Mobile 10 ank ka hona chahiye';return false}if(ch.pincode&&!/^\d{6}$/.test(ch.pincode)){msg.textContent='❌ Pincode 6 ank ka hona chahiye';return false}
   if(ch.PAN_No)ch.PAN_No=ch.PAN_No.toUpperCase();const effT=ch.Type||d.Type,effP=(ch.PAN_No!==undefined?ch.PAN_No:(d.PAN_No||'')).toUpperCase();
   if(isPAN&&effT=='Correction'&&!PANRE.test(effP)){msg.textContent='❌ Correction ke liye purana PAN number sahi likho (ABCDE1234F)';return false}
@@ -360,6 +364,7 @@ async function zipEdit0(i,mode){const PS='__ps',b=mk('div');b.append(mk('div','n
  const a=mk('div','acts');a.style.marginTop='0';
  const vb=bt(mode=='rev'?'✅ Review OK — aage bhejo':'✅ Verify ho gaya — aage bhejo','ok big',async function(){
   if(isPAN&&doSel&&!doSel.value){msg.textContent='❌ Verify se pehle DOB proof chuno (zaroori hai)';doSel.focus();doSel.scrollIntoView({block:'center'});return}
+  if(isPAN&&paSel&&((tp&&tp.value=='Correction')||d.Type=='Correction')&&!paSel.value){msg.textContent='❌ Correction ke liye PAN proof chuno (Copy of PAN Card etc.)';paSel.focus();paSel.scrollIntoView({block:'center'});return}
   if(!confirm('Sab check ho gaya?\n\nVerify karne ke baad ye entry aage ke kaam me chali jayegi aur yahan se edit nahi ho sakegi (dobara edit ke liye "Review me bhejo" karna padega).\nZIP General folder me bhi copy ho jayegi.'))return;
   this.disabled=sv.disabled=true;if(!(await savePay(true))){this.disabled=sv.disabled=false;return}const s=await doSave();if(s===false){this.disabled=sv.disabled=false;return}
   msg.textContent='⏳ Verify ho rahi hai, General folder me copy ho rahi hai...';
