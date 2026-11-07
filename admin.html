@@ -261,18 +261,27 @@ async function zipEdit0(i,mode){const PS='__ps',b=mk('div');b.append(mk('div','n
  async function cropPage(){const nm=target();if(!nm){toast('Pehle page chuno (page par dabao)');return}
   if(isPS(nm)||/Application_Form/.test(nm)||/\.pdf$/i.test(nm)){toast('Is page ka crop nahi ho sakta. Photo/Signature ko upar ke Photo ya Signature button se kholo');return}
   let src;try{if(cur=='__pdf')await loadPages();src=await blobOf(nm)}catch(e){toast('❌ '+e.message);return}
-  const bm=await createImageBitmap(src);let base=document.createElement('canvas');base.width=bm.width;base.height=bm.height;base.getContext('2d').drawImage(bm,0,0);
-  const isA4=/_A4\.jpg$/.test(nm.split('/').pop()),regs=[];let sel={x:0,y:0,w:base.width,h:base.height},sc=1,drag=null;
+  const bm=await createImageBitmap(src),full=document.createElement('canvas');full.width=bm.width;full.height=bm.height;full.getContext('2d').drawImage(bm,0,0);
+  const isA4=/_A4\.jpg$/.test(nm.split('/').pop());
+  const half=(c,cutY)=>{const W=c.width,H=c.height,m=(y0,hh)=>{const o=document.createElement('canvas');o.width=W;o.height=hh;o.getContext('2d').drawImage(c,0,y0,W,hh,0,0,W,hh);return o};return[m(0,cutY),m(cutY,H-cutY)]};
+  /* operator ne front+back dono daale to a4() unhe upar-neeche rakhta hai, beech me safed patti chhodta hai: wahi dhundhte hain */
+  const twoDocs=c=>{const r=c.height/c.width;if(!isA4||r<1.36||r>1.46)return null;const k=Math.min(1,500/c.width),t=document.createElement('canvas');t.width=Math.round(c.width*k);t.height=Math.round(c.height*k);const x=t.getContext('2d');x.drawImage(c,0,0,t.width,t.height);const D=x.getImageData(0,0,t.width,t.height).data;
+   const M=150*c.width/2480*k,bh=(t.height-3*M)/2,rowInk=(y0,y1)=>{let n=0,tot=0;for(let y=Math.max(0,Math.floor(y0));y<Math.min(t.height,Math.ceil(y1));y++)for(let xx=0;xx<t.width;xx++){const o=(y*t.width+xx)*4;tot++;if((D[o]+D[o+1]+D[o+2])/3<238)n++}return tot?n/tot:0};
+   const gap=rowInk(M+bh+M*.3,M+bh+M*.7),top=rowInk(M,M+bh),bot=rowInk(2*M+bh,t.height-M);
+   return gap<.004&&top>.01&&bot>.01?Math.round((M+bh+M/2)/k):null};
+  const cutY=twoDocs(full);let parts=cutY?half(full,cutY):[full];
+  const results=[];let step=0,base=parts[0],sel={x:0,y:0,w:base.width,h:base.height},sc=1,drag=null;
   const ov=mk('div');ov.id='cropov';ov.style.cssText='position:fixed;inset:0;z-index:60;background:#fff;display:flex;flex-direction:column';
   const top=mk('div','acts');top.style.cssText='padding:8px 10px;border-bottom:1px solid var(--b);margin:0;background:#fff';
+  const ttl=mk('b',null,'');const hint=mk('div','mt','');hint.style.cssText='padding:4px 10px;background:#fffbe6;border-bottom:1px solid var(--b);font-weight:600';
   const area=mk('div');area.style.cssText='flex:1;overflow:auto;background:#eef1f7;padding:8px;text-align:center';const cv=document.createElement('canvas');cv.style.cssText='touch-action:none;cursor:crosshair;background:#fff;box-shadow:0 0 0 1px #ccd';area.append(cv);
   const bot=mk('div','acts');bot.style.cssText='padding:8px 10px;border-top:1px solid var(--b);margin:0;background:#fff';const info=mk('span','mt','');
   const HS=[[-1,-1],[1,-1],[-1,1],[1,1],[0,-1],[0,1],[-1,0],[1,0]];
   const pos=e=>{const q=cv.getBoundingClientRect();return{x:(e.clientX-q.left)*(cv.width/q.width),y:(e.clientY-q.top)*(cv.height/q.height)}};
   const hpt=([hx,hy])=>({x:(sel.x+(hx<0?0:hx>0?sel.w:sel.w/2))*sc,y:(sel.y+(hy<0?0:hy>0?sel.h:sel.h/2))*sc});
-  function draw(){const W=Math.round(base.width*sc),H=Math.round(base.height*sc);cv.width=W;cv.height=H;const x=cv.getContext('2d');x.drawImage(base,0,0,W,H);x.fillStyle='rgba(0,0,0,.5)';const a=sel.x*sc,b=sel.y*sc,w=sel.w*sc,hh=sel.h*sc;x.fillRect(0,0,W,b);x.fillRect(0,b+hh,W,H-b-hh);x.fillRect(0,b,a,hh);x.fillRect(a+w,b,W-a-w,hh);x.strokeStyle='#1e5eff';x.lineWidth=2;x.strokeRect(a,b,w,hh);x.fillStyle='#1e5eff';HS.forEach(hs=>{const q=hpt(hs);x.fillRect(q.x-7,q.y-7,14,14)});info.textContent=(regs.length?regs.length+' region jodi gayi · ':'')+'Selection: '+Math.round(sel.w)+'×'+Math.round(sel.h)+' px'}
+  function draw(){const W=Math.round(base.width*sc),H=Math.round(base.height*sc);cv.width=W;cv.height=H;const x=cv.getContext('2d');x.drawImage(base,0,0,W,H);x.fillStyle='rgba(0,0,0,.5)';const a=sel.x*sc,b=sel.y*sc,w=sel.w*sc,hh=sel.h*sc;x.fillRect(0,0,W,b);x.fillRect(0,b+hh,W,H-b-hh);x.fillRect(0,b,a,hh);x.fillRect(a+w,b,W-a-w,hh);x.strokeStyle='#1e5eff';x.lineWidth=2;x.strokeRect(a,b,w,hh);x.fillStyle='#1e5eff';HS.forEach(hs=>{const q=hpt(hs);x.fillRect(q.x-7,q.y-7,14,14)});info.textContent='Selection: '+Math.round(sel.w)+'×'+Math.round(sel.h)+' px'}
   const fit=()=>{sc=Math.min(1,(area.clientWidth-20)/base.width);draw()};
-  cv.onpointerdown=e=>{const p=pos(e);cv.setPointerCapture(e.pointerId);const hs=HS.find(h=>{const q=hpt(h);return Math.abs(q.x-p.x)<=18&&Math.abs(q.y-p.y)<=18});
+  cv.onpointerdown=e=>{const p=pos(e);cv.setPointerCapture(e.pointerId);const hs=HS.find(q=>{const t=hpt(q);return Math.abs(t.x-p.x)<=18&&Math.abs(t.y-p.y)<=18});
    if(hs)drag={m:'h',hs,st:p,o:{...sel}};else if(p.x>=sel.x*sc&&p.x<=(sel.x+sel.w)*sc&&p.y>=sel.y*sc&&p.y<=(sel.y+sel.h)*sc)drag={m:'mv',st:p,o:{...sel}};else{drag={m:'new',sx:p.x/sc,sy:p.y/sc};sel={x:drag.sx,y:drag.sy,w:1,h:1}}};
   cv.onpointermove=e=>{if(!drag)return;const p=pos(e),cl=(v,lo,hi)=>Math.max(lo,Math.min(hi,v)),BW=base.width,BH=base.height;
    if(drag.m=='new'){const px=cl(p.x/sc,0,BW),py=cl(p.y/sc,0,BH);sel={x:Math.min(drag.sx,px),y:Math.min(drag.sy,py),w:Math.max(2,Math.abs(px-drag.sx)),h:Math.max(2,Math.abs(py-drag.sy))}}
@@ -280,18 +289,23 @@ async function zipEdit0(i,mode){const PS='__ps',b=mk('div');b.append(mk('div','n
    else{const dx=(p.x-drag.st.x)/sc,dy=(p.y-drag.st.y)/sc;let l=drag.o.x,t=drag.o.y,rr=drag.o.x+drag.o.w,bb=drag.o.y+drag.o.h;const[hx,hy]=drag.hs;if(hx<0)l+=dx;if(hx>0)rr+=dx;if(hy<0)t+=dy;if(hy>0)bb+=dy;l=cl(l,0,BW);rr=cl(rr,0,BW);t=cl(t,0,BH);bb=cl(bb,0,BH);sel={x:Math.min(l,rr),y:Math.min(t,bb),w:Math.max(2,Math.abs(rr-l)),h:Math.max(2,Math.abs(bb-t))}}
    draw()};
   cv.onpointerup=cv.onpointercancel=()=>{drag=null};
-  const rot=dir=>{const o=document.createElement('canvas');o.width=base.height;o.height=base.width;const c=o.getContext('2d');c.translate(o.width/2,o.height/2);c.rotate(dir*Math.PI/2);c.drawImage(base,-base.width/2,-base.height/2);base=o;sel={x:0,y:0,w:base.width,h:base.height};fit()};
-  const autoTrim=()=>{const t=document.createElement('canvas'),k=Math.min(1,700/Math.max(base.width,base.height));t.width=Math.round(base.width*k);t.height=Math.round(base.height*k);const c=t.getContext('2d');c.drawImage(base,0,0,t.width,t.height);const D=c.getImageData(0,0,t.width,t.height).data;let x0=t.width,y0=t.height,x1=0,y1=0;
+  const trimSel=()=>{const t=document.createElement('canvas'),k=Math.min(1,700/Math.max(base.width,base.height));t.width=Math.round(base.width*k);t.height=Math.round(base.height*k);const c=t.getContext('2d');c.drawImage(base,0,0,t.width,t.height);const D=c.getImageData(0,0,t.width,t.height).data;let x0=t.width,y0=t.height,x1=0,y1=0;
    for(let y=0;y<t.height;y++)for(let x=0;x<t.width;x++){const o=(y*t.width+x)*4,g=(D[o]+D[o+1]+D[o+2])/3;if(g<232){if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}}
-   if(x1<=x0||y1<=y0){toast('Document ka kinara nahi mila, haath se chuno');return}const m=6;x0=Math.max(0,x0-m);y0=Math.max(0,y0-m);x1=Math.min(t.width,x1+m);y1=Math.min(t.height,y1+m);sel={x:x0/k,y:y0/k,w:(x1-x0)/k,h:(y1-y0)/k};draw()};
+   if(x1<=x0||y1<=y0)return null;const m=6;x0=Math.max(0,x0-m);y0=Math.max(0,y0-m);x1=Math.min(t.width,x1+m);y1=Math.min(t.height,y1+m);return{x:x0/k,y:y0/k,w:(x1-x0)/k,h:(y1-y0)/k}};
+  const autoTrim=()=>{const s=trimSel();if(!s){toast('Document ka kinara nahi mila, haath se chuno');return}sel=s;draw()};
+  const rot=dir=>{const o=document.createElement('canvas');o.width=base.height;o.height=base.width;const c=o.getContext('2d');c.translate(o.width/2,o.height/2);c.rotate(dir*Math.PI/2);c.drawImage(base,-base.width/2,-base.height/2);base=o;parts[step]=o;sel={x:0,y:0,w:base.width,h:base.height};fit()};
   const cut=()=>new Promise(res=>{const o=document.createElement('canvas');o.width=Math.round(sel.w);o.height=Math.round(sel.h);o.getContext('2d').drawImage(base,sel.x,sel.y,sel.w,sel.h,0,0,o.width,o.height);o.toBlob(res,/\.png$/i.test(nm)?'image/png':'image/jpeg',.92)});
   const close=()=>ov.remove();
   async function apply(list){try{const bl=isA4?(await a4(list)).jpg:list[0];REPL[nm]=bl;delete URLS[nm];DEL.delete(nm);if(isPhSn(nm)&&loaded){PGB[PS]=await composePS();delete URLS[PS]}close();open(cur);toast('✅ Crop lag gaya (Save karne par ZIP me jayega)')}catch(e){toast('❌ '+e.message)}}
-  top.append(mk('b',null,'✂️ Crop / adjust — '+PAGEN(nm)),bt('↺','s',()=>rot(-1)),bt('↻','s',()=>rot(1)),bt('🪄 Auto trim','s',autoTrim),bt('↩ Reset','s',()=>{sel={x:0,y:0,w:base.width,h:base.height};draw()}),bt('✕ Band','s bad',close));
-  const okb=bt('✔ Is region ko page me lagao','f big',async function(){this.disabled=true;await apply(regs.concat([await cut()]).slice(0,2));this.disabled=false});
-  if(isA4)bot.append(bt('➕ Region jodo (front/back)','',async()=>{if(regs.length>=1){toast('Ek page par max 2 region (front + back)');return}regs.push(await cut());sel={x:0,y:0,w:base.width,h:base.height};okb.textContent='✔ Page banao (2 region)';draw();toast('Region jud gayi. Ab doosri region chuno')}));
-  bot.append(okb,info);ov.append(top,area,bot);document.body.append(ov);fit();
-  /* aadha-adhura selection nahi: pehle auto-trim suggest */ }
+  const nxt=bt('','f big',null),prv=bt('⬅ Peeche (Front dobara)','',()=>{step=0;go(0)}),spl=bt('↕ Front/Back alag karo','',()=>{parts=half(base,Math.round(base.height/2));results.length=0;step=0;go(0)});
+  function go(n){step=n;base=parts[n];const two=parts.length==2;sel=trimSel()||{x:0,y:0,w:base.width,h:base.height};
+   ttl.textContent='✂️ Crop — '+PAGEN(nm)+(two?' · Step '+(n+1)+'/2':'');hint.textContent=two?(n==0?'1️⃣ FRONT (upar wala) ko box me lo — corner kheench kar theek karo':'2️⃣ BACK (neeche wala) ko box me lo — corner kheench kar theek karo'):'Box ko document par theek karo (corner kheench sakte ho, andar se khiska sakte ho)';
+   prv.style.display=two&&n==1?'':'none';spl.style.display=!two&&isA4?'':'none';
+   nxt.textContent=two?(n==0?'➡ Aage: Back crop karo':'✔ Dono ko page me lagao'):'✔ Is region ko page me lagao';
+   fit()}
+  nxt.onclick=async function(){this.disabled=true;try{const b=await cut();if(parts.length==2){results[step]=b;if(step==0){go(1)}else{await apply([results[0],results[1]])}}else await apply([b])}finally{this.disabled=false}};
+  top.append(ttl,bt('↺','s',()=>rot(-1)),bt('↻','s',()=>rot(1)),bt('🪄 Auto trim','s',autoTrim),bt('↩ Reset','s',()=>{sel={x:0,y:0,w:base.width,h:base.height};draw()}),bt('✕ Band','s bad',close));
+  bot.append(prv,spl,nxt,info);ov.append(top,hint,area,bot);document.body.append(ov);go(0)}
  const fi=mk('input');fi.type='file';fi.accept='image/*';fi.style.display='none';
  fi.onchange=async()=>{const f=fi.files[0];fi.value='';const nm=target();if(!f||!nm)return;if(isPS(nm)){toast('Photo/Signature ko upar ke Photo ya Signature button se badlo');return}try{if(cur=='__pdf')await loadPages();const f2=nm.split('/').pop();let bl;if(/_A4\.jpg$/.test(f2))bl=(await a4([f])).jpg;else if(/\.png$/i.test(f2))bl=await resizeImg(f,700,'image/png');else bl=await resizeImg(f,900,'image/jpeg');REPL[nm]=bl;delete URLS[nm];DEL.delete(nm);if(isPhSn(nm)&&loaded){PGB[PS]=await composePS();delete URLS[PS]}open(cur)}catch(e){toast('❌ '+e.message)}};
  const addF=mk('input');addF.type='file';addF.accept='image/*';addF.style.display='none';
