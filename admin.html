@@ -71,7 +71,7 @@ label{display:block;font-size:13px;font-weight:600;margin:10px 0 4px}
 const SHEET_URL='https://script.google.com/macros/s/AKfycbzhjpoBnoFRetrxUOGUxcFOXKFekJuBE4zlGmKTMyI-wfhYsvoop2er23IE2JBcQqDv/exec';
 const $=s=>document.querySelector(s),LBL={PAN:'PAN Card',Voter:'Election',Gazette:'Gazette'},DONE=/sent|complete|done|deliver/i,PAGE=30;
 const FN={proof_identity:'Identity Proof',proof_address:'Address Proof',proof_dob:'DOB Proof',proof_pan:'PAN Proof (Correction)',name:'Naam',newname:'Naya naam',oldname:'Purana naam',father:'Father',mother:'Mother',spouse:'Husband/Wife',dob:'DOB',mobile:'Mobile',aadhaar:'Aadhaar',address:'Address',flat:'Flat/Door/Building',road:'Road/Street',po:'Post Office',area:'Area/Town',district:'District',state:'State',pincode:'Pincode',gender:'Gender',email:'Email',PAN_No:'Purana PAN',EPIC_No:'Purana EPIC',Center:'Center',Operator:'Operator',Type:'Type'};
-let TOKEN=localStorage.atok||'',ITEMS=[],CEN=[],TAB=(new URLSearchParams(location.search).get('tab')=='rev'?'rev':'ver'),BUSY=false,LAST=0,LIM=PAGE,LOADED=false,ERR='',SRVOLD=false;const VER='v11',REQV='v11';
+let TOKEN=localStorage.atok||'',ITEMS=[],CEN=[],TAB=(new URLSearchParams(location.search).get('tab')=='rev'?'rev':'ver'),BUSY=false,LAST=0,LIM=PAGE,LOADED=false,ERR='',SRVOLD=false;const VER='v12',REQV='v11';const vnum=x=>parseInt(String(x||'').replace(/\D/g,''))||0;
 const F={center:'',pay:''};
 function mk(t,c,x){const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
 function bt(l,c,fn){const b=mk('button','btn '+(c||''),l);b.type='button';b.onclick=fn;return b}
@@ -95,7 +95,7 @@ $('#md').onclick=e=>{if(e.target.id=='md')closeM()};
 /* ---------- data (sirf pending kaam aata hai) ---------- */
 function cacheSave(){try{localStorage.acache=JSON.stringify({items:ITEMS,cen:CEN})}catch(e){}}
 async function load(manual){if(BUSY){if(manual)toast('Load ho raha hai, ruko...');return}BUSY=true;bar(true);$('#upd').textContent='⏳ Load ho raha hai...';
- try{const r=await call('alist',{},40000);if(!r.ok)throw new Error(r.msg||'error');ITEMS=r.items.sort((a,b)=>String(a.ts).localeCompare(String(b.ts)));CEN=r.centers;LAST=Date.now();LOADED=true;ERR='';SRVOLD=r.ver!==REQV;cacheSave();$('#upd').textContent='Taaza: '+new Date().toLocaleTimeString('en-IN')+' · poori entries: '+r.total;if($('#md').style.display!='block')render()}
+ try{const r=await call('alist',{},40000);if(!r.ok)throw new Error(r.msg||'error');ITEMS=r.items.sort((a,b)=>String(a.ts).localeCompare(String(b.ts)));CEN=r.centers;LAST=Date.now();LOADED=true;ERR='';SRVOLD=vnum(r.ver)<vnum(REQV);cacheSave();$('#upd').textContent='Taaza: '+new Date().toLocaleTimeString('en-IN')+' · poori entries: '+r.total+' · server '+(r.ver||'purana');if($('#md').style.display!='block')render()}
  catch(e){if(e.message!='auth'){ERR=e.name=='AbortError'?'Server ne bahut der laga di (net slow ya pehli baar setup ho raha hai)':(e.message||'Net ki dikkat');$('#upd').textContent='⚠️ '+ERR;if($('#md').style.display!='block')render()}}
  finally{BUSY=false;bar(false);if(!LOADED&&!ERR&&$('#md').style.display!='block')render()}}
 async function upd(ids,set,msg){try{const r=await call('aupd',{ids,set});if(!r.ok){toast('❌ '+(r.msg||'error'));return false}
